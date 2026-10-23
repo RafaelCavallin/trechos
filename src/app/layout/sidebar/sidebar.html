@@ -1,0 +1,35 @@
+<div class="brand">
+  <div class="brand-mark" aria-hidden="true">t</div>
+  <span class="brand-name">Trechos</span>
+</div>
+
+<nav aria-label="Principal">
+  <ul class="nav-list">
+    @for (item of mainItems; track item.path) {
+      <li>
+        <ng-container *ngTemplateOutlet="link; context: { $implicit: item }" />
+      </li>
+    }
+  </ul>
+  <div class="spacer"></div>
+  <ul class="nav-list">
+    <li><ng-container *ngTemplateOutlet="link; context: { $implicit: settingsItem }" /></li>
+  </ul>
+</nav>
+
+<ng-template #link let-item>
+  <a
+    class="nav-link"
+    [routerLink]="item.path"
+    [class.active]="isActive(item)"
+    [attr.aria-current]="isActive(item) ? 'page' : null"
+  >
+    <svg [lucideIcon]="item.icon" [size]="18" aria-hidden="true"></svg>
+    <span class="nav-label">{{ item.label }}</span>
+    @if (item.showsQueue && queue.dueCount() > 0) {
+      <span class="tag tag-accent badge">
+        {{ queue.dueCount() }}<span class="sr-only"> trechos na fila</span>
+      </span>
+    }
+  </a>
+</ng-template>

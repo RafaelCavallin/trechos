@@ -1,0 +1,48 @@
+:host {
+  display: block;
+}
+
+/* Só a barra lateral e o conteúdo ficam na grade; toast e diálogo são fixos. */
+.layout {
+  display: grid;
+  grid-template-columns: 232px minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  height: 100dvh;
+}
+
+main {
+  overflow-y: auto;
+  min-height: 0;
+  padding: 36px 44px 96px;
+}
+
+main:focus {
+  outline: none;
+}
+
+.skip-link {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 60;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: var(--color-neutral-900);
+  color: var(--color-neutral-100);
+  transform: translateY(-200%);
+}
+
+.skip-link:focus {
+  transform: none;
+}
+
+@media (max-width: 760px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  main {
+    padding: 24px 16px 96px;
+  }
+}
