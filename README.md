@@ -1,7 +1,7 @@
 # Trechos
 
 Sistema de resumos em que o **trecho** é a unidade de revisão (repetição espaçada com FSRS).
-A especificação fica em [`Sistema de Resumos prototype/spec_sistema_de_resumos/`](Sistema%20de%20Resumos%20prototype/spec_sistema_de_resumos/)
+A especificação fica na pasta local `Sistema de Resumos prototype/spec_sistema_de_resumos/`, fora do git
 (`requirements.md`, `design.md` e `tasks.md`, que lista as fases).
 
 ## Stack

@@ -21,12 +21,7 @@ yarn-error.log
 *.sublime-workspace
 
 # Visual Studio Code
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-!.vscode/mcp.json
+/.vscode
 .history/*
 
 # Miscellaneous
@@ -50,5 +45,6 @@ Thumbs.db
 .env.*
 !.env.example
 
-# Cópia compactada do protótipo (o conteúdo já está na pasta ao lado)
+# Protótipo e especificação (ficam só na máquina local)
+/Sistema de Resumos prototype
 /Sistema de Resumos prototype.zip
