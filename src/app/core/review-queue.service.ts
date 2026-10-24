@@ -1,10 +1,15 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, computed, inject } from '@angular/core';
+import { buildDailyQueue } from '../scheduler/queue';
+import { StudyStore } from './study-store';
 
-/**
- * Fila de revisão do dia. Por enquanto só expõe o tamanho para o badge da
- * barra lateral; a montagem da fila de verdade entra na Fase 2 (T2.3).
- */
+/** Fila de revisão do dia (T2.3), recalculada sempre que os dados mudam. */
 @Injectable({ providedIn: 'root' })
 export class ReviewQueueService {
-  readonly dueCount = signal(0);
+  private readonly store = inject(StudyStore);
+
+  readonly config = this.store.config;
+  readonly fila = computed(() =>
+    buildDailyQueue(this.store.trechos(), this.store.agora(), this.store.config().limiteDiario),
+  );
+  readonly dueCount = computed(() => this.fila().length);
 }
