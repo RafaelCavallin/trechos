@@ -1,0 +1,52 @@
+<main>
+  <div class="card elev-md login">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">t</div>
+      <span class="brand-name">Trechos</span>
+    </div>
+
+    <h1>{{ modo() === 'entrar' ? 'Entrar' : 'Criar conta' }}</h1>
+
+    <form (ngSubmit)="enviar()">
+      <div class="field">
+        <label for="email">E-mail</label>
+        <input
+          id="email"
+          class="input"
+          type="email"
+          name="email"
+          autocomplete="email"
+          required
+          [ngModel]="email()"
+          (ngModelChange)="email.set($event)"
+        />
+      </div>
+      <div class="field">
+        <label for="senha">Senha</label>
+        <input
+          id="senha"
+          class="input"
+          type="password"
+          name="senha"
+          required
+          minlength="6"
+          [attr.autocomplete]="modo() === 'entrar' ? 'current-password' : 'new-password'"
+          [ngModel]="senha()"
+          (ngModelChange)="senha.set($event)"
+        />
+      </div>
+
+      @if (erro(); as mensagem) {
+        <p class="erro" role="alert">{{ mensagem }}</p>
+      }
+
+      <button class="btn btn-primary btn-block" type="submit" [disabled]="enviando()">
+        {{ modo() === 'entrar' ? 'Entrar' : 'Criar conta' }}
+      </button>
+    </form>
+
+    <button class="btn btn-ghost alternar" type="button" (click)="alternarModo()">
+      {{ modo() === 'entrar' ? 'Ainda não tenho conta' : 'Já tenho conta' }}
+    </button>
+  </div>
+</main>

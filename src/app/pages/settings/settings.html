@@ -1,0 +1,186 @@
+<h1>Configurações</h1>
+
+@switch (store.status()) {
+  @case ('erro') {
+    <div class="card cartao">
+      <p class="card-body">Não foi possível carregar suas configurações.</p>
+      <button class="btn btn-secondary acao" type="button" (click)="store.load()">
+        Tentar de novo
+      </button>
+    </div>
+  }
+  @case ('pronto') {
+    <section class="card cartao" aria-labelledby="t-retencao">
+      <h2 class="card-title" id="t-retencao">Retenção desejada</h2>
+      <p class="card-body">
+        Probabilidade de lembrar no dia da revisão. Quanto maior, mais curtos os intervalos.
+      </p>
+      <div class="seg" role="radiogroup" aria-labelledby="t-retencao">
+        @for (o of retencoes; track o.valor) {
+          <label class="seg-opt">
+            <input
+              type="radio"
+              name="retencao"
+              [checked]="config().retencao === o.valor"
+              (change)="escolherRetencao(o.valor)"
+            />
+            {{ o.rotulo }}
+          </label>
+        }
+      </div>
+      <p class="nota exemplo-retencao">{{ exemploRetencao() }}</p>
+    </section>
+
+    <section class="card cartao" aria-labelledby="t-limite">
+      <h2 class="card-title" id="t-limite">Limite de tamanho do trecho</h2>
+      <p class="card-body">
+        Acima do limite, o editor avisa e sugere dividir o trecho pelos subtítulos.
+      </p>
+      <div class="linha">
+        <div class="seg" role="radiogroup" aria-label="Medir o trecho por">
+          @for (o of tipos; track o.valor) {
+            <label class="seg-opt">
+              <input
+                type="radio"
+                name="limite-tipo"
+                [checked]="config().limiteTipo === o.valor"
+                (change)="escolherTipo(o.valor)"
+              />
+              {{ o.rotulo }}
+            </label>
+          }
+        </div>
+        <input
+          class="input numero"
+          type="number"
+          min="1"
+          name="limite"
+          [attr.aria-label]="
+            config().limiteTipo === 'palavras' ? 'Palavras por trecho' : 'Lacunas por trecho'
+          "
+          [value]="limiteAtual()"
+          (change)="mudarNumero('limite', $event)"
+        />
+        <span>{{ config().limiteTipo }} por trecho</span>
+      </div>
+    </section>
+
+    <section class="card cartao" aria-labelledby="t-faixas">
+      <h2 class="card-title" id="t-faixas">Conversão de acertos em nota</h2>
+      <p class="card-body">
+        Proporção de itens acertados no trecho. Ponto de partida, a calibrar com o uso.
+      </p>
+      <div class="faixas">
+        <label for="faixa-easy">Fácil</label>
+        <input
+          id="faixa-easy"
+          class="input"
+          type="number"
+          min="0"
+          max="100"
+          [value]="config().faixas.easy"
+          (change)="mudarNumero('easy', $event)"
+        />
+        <span class="tag tag-accent-2">Easy</span>
+
+        <label for="faixa-good">Lembrei</label>
+        <input
+          id="faixa-good"
+          class="input"
+          type="number"
+          min="0"
+          max="100"
+          [value]="config().faixas.good"
+          (change)="mudarNumero('good', $event)"
+        />
+        <span class="tag tag-accent-2">Good</span>
+
+        <label for="faixa-hard">Lembrei com esforço</label>
+        <input
+          id="faixa-hard"
+          class="input"
+          type="number"
+          min="0"
+          max="100"
+          [value]="config().faixas.hard"
+          (change)="mudarNumero('hard', $event)"
+        />
+        <span class="tag tag-accent">Hard</span>
+
+        <span class="rotulo">Não lembrei</span>
+        <span class="abaixo">abaixo</span>
+        <span class="tag tag-accent">Again</span>
+      </div>
+      <p class="nota">Valores em % mínimo de acertos para cada nota.</p>
+    </section>
+
+    <section class="card cartao" aria-labelledby="t-densidade">
+      <h2 class="card-title" id="t-densidade">Densidade das lacunas dinâmicas</h2>
+      <p class="card-body">
+        Além das lacunas que você marcou, o sistema oculta palavras-chave a cada revisão. Trechos
+        estáveis usam lacunas densas.
+      </p>
+      <div class="seg" role="radiogroup" aria-labelledby="t-densidade">
+        @for (o of densidades; track o.valor) {
+          <label class="seg-opt">
+            <input
+              type="radio"
+              name="densidade"
+              [checked]="config().densidade === o.valor"
+              (change)="escolherDensidade(o.valor)"
+            />
+            {{ o.rotulo }}
+          </label>
+        }
+      </div>
+    </section>
+
+    <section class="card cartao" aria-labelledby="t-edicao">
+      <h2 class="card-title" id="t-edicao">Edição de trecho já revisado</h2>
+      <div class="linha">
+        <span>Acima de</span>
+        <input
+          class="input numero curto"
+          type="number"
+          min="1"
+          max="100"
+          name="limite-edicao"
+          aria-label="Limite de alteração em %"
+          [value]="config().limiteEdicao"
+          (change)="mudarNumero('limiteEdicao', $event)"
+        />
+        <span>% do texto alterado, a estabilidade é reduzida e o trecho volta hoje.</span>
+      </div>
+    </section>
+
+    <section class="card cartao" aria-labelledby="t-diario">
+      <h2 class="card-title" id="t-diario">Limite diário da sessão</h2>
+      <div class="linha">
+        <input
+          class="input numero curto"
+          type="number"
+          min="1"
+          name="limite-diario"
+          aria-label="Trechos por dia"
+          [value]="config().limiteDiario"
+          (change)="mudarNumero('limiteDiario', $event)"
+        />
+        <span>trechos por dia</span>
+      </div>
+    </section>
+
+    <div>
+      <button
+        class="btn btn-secondary"
+        type="button"
+        [disabled]="ehPadrao()"
+        (click)="restaurarPadroes()"
+      >
+        Restaurar padrões
+      </button>
+    </div>
+  }
+  @default {
+    <p class="nota">Carregando…</p>
+  }
+}

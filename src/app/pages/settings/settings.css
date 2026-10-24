@@ -1,0 +1,81 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-width: 760px;
+}
+
+h1 {
+  margin: 0 0 6px;
+  font-size: 40px;
+}
+
+.cartao {
+  padding: 24px 28px;
+  gap: 12px;
+}
+
+h2.card-title {
+  margin: 0;
+}
+
+.card-body {
+  flex: none;
+  font-size: 14px;
+}
+
+.seg {
+  align-self: flex-start;
+}
+
+.seg-opt {
+  white-space: nowrap;
+}
+
+.nota {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-neutral-700);
+}
+
+.linha {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+}
+
+.numero {
+  width: 110px;
+}
+
+.numero.curto {
+  width: 90px;
+}
+
+.faixas {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 110px 90px;
+  gap: 10px 14px;
+  align-items: center;
+  font-size: 14px;
+}
+
+.faixas label,
+.faixas .rotulo {
+  font-weight: 700;
+}
+
+.faixas .tag {
+  justify-self: start;
+}
+
+.abaixo {
+  padding-left: 14px;
+  color: var(--color-neutral-700);
+}
+
+.acao {
+  align-self: flex-start;
+}

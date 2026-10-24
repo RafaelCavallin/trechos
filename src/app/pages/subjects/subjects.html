@@ -1,0 +1,230 @@
+<header class="topo">
+  <div class="intro">
+    <h1>Matérias</h1>
+    <p>Matéria → Assunto → Resumo. Arraste pelas alças para reordenar.</p>
+  </div>
+  <button class="btn btn-primary nova" type="button" (click)="novaMateria()">
+    <svg lucidePlus [size]="16" aria-hidden="true"></svg>
+    Nova matéria
+  </button>
+</header>
+
+<ng-template #campoNome>
+  <input
+    appAutofocus
+    class="input renomear"
+    aria-label="Novo nome"
+    [value]="texto()"
+    (input)="texto.set($any($event.target).value)"
+    (keydown.enter)="confirmarRenomear()"
+    (keydown.escape)="cancelarRenomear()"
+    (blur)="confirmarRenomear()"
+  />
+</ng-template>
+
+@switch (store.status()) {
+  @case ('erro') {
+    <div class="card aviso">
+      <p>Não foi possível carregar suas matérias.</p>
+      <button class="btn btn-secondary" type="button" (click)="store.load()">Tentar de novo</button>
+    </div>
+  }
+  @case ('pronto') {
+    @if (arvore().length === 0) {
+      <div class="card aviso">
+        <p class="card-title">Nenhuma matéria ainda.</p>
+        <p>Crie a primeira com <strong>Nova matéria</strong> ou carregue os resumos de exemplo.</p>
+        <button class="btn btn-secondary" type="button" (click)="carregarExemplos()">
+          Carregar exemplos
+        </button>
+      </div>
+    }
+    <div
+      class="materias"
+      cdkDropList
+      cdkDropListLockAxis="y"
+      (cdkDropListDropped)="soltar('materia', idsMaterias(), $event)"
+    >
+      @for (m of arvore(); track m.materia.id) {
+        <section class="card materia" cdkDrag [attr.aria-label]="m.materia.nome">
+          <div class="linha linha-materia">
+            <span class="alca" cdkDragHandle title="Arrastar">
+              <svg lucideGripVertical [size]="16" aria-hidden="true"></svg>
+            </span>
+            <button
+              class="btn btn-icon expandir"
+              type="button"
+              [attr.aria-expanded]="aberta(m.materia.id)"
+              [attr.aria-label]="
+                (aberta(m.materia.id) ? 'Recolher ' : 'Expandir ') + m.materia.nome
+              "
+              (click)="alternar(m.materia.id)"
+            >
+              <svg lucideChevronRight [size]="16" aria-hidden="true"></svg>
+            </button>
+            @if (editando('materia', m.materia.id)) {
+              <span class="nome"><ng-container *ngTemplateOutlet="campoNome" /></span>
+            } @else {
+              <h2
+                class="nome nome-materia"
+                (dblclick)="comecarRenomear('materia', m.materia.id, m.materia.nome)"
+              >
+                {{ m.materia.nome }}
+              </h2>
+            }
+            <span class="tag tag-neutral">{{
+              plural(m.assuntos.length, 'assunto', 'assuntos')
+            }}</span>
+            <span class="retencao" [attr.data-faixa]="faixa(m.retencao)" title="Retenção média">{{
+              pct(m.retencao)
+            }}</span>
+            <button
+              class="btn btn-icon btn-secondary"
+              type="button"
+              title="Novo assunto"
+              [attr.aria-label]="'Novo assunto em ' + m.materia.nome"
+              (click)="novoAssunto(m.materia.id)"
+            >
+              <svg lucidePlus [size]="16" aria-hidden="true"></svg>
+            </button>
+            <button
+              class="btn btn-icon acao"
+              type="button"
+              title="Renomear"
+              [attr.aria-label]="'Renomear ' + m.materia.nome"
+              (click)="comecarRenomear('materia', m.materia.id, m.materia.nome)"
+            >
+              <svg lucidePencil [size]="16" aria-hidden="true"></svg>
+            </button>
+            <button
+              class="btn btn-icon acao excluir"
+              type="button"
+              title="Excluir"
+              [attr.aria-label]="'Excluir ' + m.materia.nome"
+              (click)="excluir('materia', m.materia.id, m.materia.nome)"
+            >
+              <svg lucideTrash [size]="16" aria-hidden="true"></svg>
+            </button>
+          </div>
+
+          @if (aberta(m.materia.id)) {
+            <div
+              class="assuntos"
+              cdkDropList
+              cdkDropListLockAxis="y"
+              (cdkDropListDropped)="soltar('assunto', idsAssuntos(m), $event)"
+            >
+              @if (m.assuntos.length === 0) {
+                <p class="vazio">Nenhum assunto ainda. Use + para criar.</p>
+              }
+              @for (a of m.assuntos; track a.assunto.id) {
+                <div class="assunto" cdkDrag>
+                  <div class="linha linha-assunto">
+                    <span class="alca" cdkDragHandle title="Arrastar">
+                      <svg lucideGripVertical [size]="14" aria-hidden="true"></svg>
+                    </span>
+                    @if (editando('assunto', a.assunto.id)) {
+                      <span class="nome"><ng-container *ngTemplateOutlet="campoNome" /></span>
+                    } @else {
+                      <h3
+                        class="nome nome-assunto"
+                        (dblclick)="comecarRenomear('assunto', a.assunto.id, a.assunto.nome)"
+                      >
+                        {{ a.assunto.nome }}
+                      </h3>
+                    }
+                    @if (a.proxima) {
+                      <span class="meta">Próxima: {{ proxima(a.proxima) }}</span>
+                    }
+                    <span class="tag tag-retencao" [attr.data-faixa]="faixa(a.retencao)">{{
+                      pct(a.retencao)
+                    }}</span>
+                    <button
+                      class="btn btn-icon acao pequeno"
+                      type="button"
+                      title="Novo resumo"
+                      [attr.aria-label]="'Novo resumo em ' + a.assunto.nome"
+                      (click)="novoResumo(m.materia.id, a.assunto.id)"
+                    >
+                      <svg lucidePlus [size]="14" aria-hidden="true"></svg>
+                    </button>
+                    <button
+                      class="btn btn-icon acao pequeno"
+                      type="button"
+                      title="Renomear"
+                      [attr.aria-label]="'Renomear ' + a.assunto.nome"
+                      (click)="comecarRenomear('assunto', a.assunto.id, a.assunto.nome)"
+                    >
+                      <svg lucidePencil [size]="14" aria-hidden="true"></svg>
+                    </button>
+                    <button
+                      class="btn btn-icon acao pequeno excluir"
+                      type="button"
+                      title="Excluir"
+                      [attr.aria-label]="'Excluir ' + a.assunto.nome"
+                      (click)="excluir('assunto', a.assunto.id, a.assunto.nome)"
+                    >
+                      <svg lucideTrash [size]="14" aria-hidden="true"></svg>
+                    </button>
+                  </div>
+
+                  <div
+                    class="resumos"
+                    cdkDropList
+                    cdkDropListLockAxis="y"
+                    (cdkDropListDropped)="soltar('resumo', idsResumos(a), $event)"
+                  >
+                    @for (r of a.resumos; track r.resumo.id) {
+                      <div class="linha linha-resumo" cdkDrag>
+                        <span class="alca" cdkDragHandle title="Arrastar">
+                          <svg lucideGripVertical [size]="14" aria-hidden="true"></svg>
+                        </span>
+                        @if (editando('resumo', r.resumo.id)) {
+                          <span class="nome"><ng-container *ngTemplateOutlet="campoNome" /></span>
+                        } @else {
+                          <a
+                            class="nome abrir-resumo"
+                            [routerLink]="['/resumos', r.resumo.id]"
+                            (dblclick)="comecarRenomear('resumo', r.resumo.id, r.resumo.titulo)"
+                          >
+                            <svg lucideFile [size]="15" aria-hidden="true"></svg>
+                            <span class="titulo">{{ r.resumo.titulo }}</span>
+                          </a>
+                        }
+                        <span class="meta pequeno">
+                          {{ plural(r.trechos, 'trecho', 'trechos') }} ·
+                          {{ plural(r.itens, 'item', 'itens') }}
+                        </span>
+                        <button
+                          class="btn btn-icon acao menor"
+                          type="button"
+                          title="Renomear"
+                          [attr.aria-label]="'Renomear ' + r.resumo.titulo"
+                          (click)="comecarRenomear('resumo', r.resumo.id, r.resumo.titulo)"
+                        >
+                          <svg lucidePencil [size]="13" aria-hidden="true"></svg>
+                        </button>
+                        <button
+                          class="btn btn-icon acao menor excluir"
+                          type="button"
+                          title="Excluir"
+                          [attr.aria-label]="'Excluir ' + r.resumo.titulo"
+                          (click)="excluir('resumo', r.resumo.id, r.resumo.titulo)"
+                        >
+                          <svg lucideTrash [size]="13" aria-hidden="true"></svg>
+                        </button>
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </section>
+      }
+    </div>
+  }
+  @default {
+    <p class="text-muted">Carregando…</p>
+  }
+}

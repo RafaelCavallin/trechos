@@ -1,0 +1,125 @@
+<h1>Estatísticas</h1>
+
+<div class="grade">
+  <section class="card bloco" aria-labelledby="titulo-retencao">
+    <h2 class="card-kicker" id="titulo-retencao">Retenção por matéria e assunto</h2>
+    @for (m of retencao(); track m.materia.id) {
+      <div class="materia">
+        <div class="materia-topo">
+          <span class="nome-materia">{{ m.materia.nome }}</span>
+          <span class="pct" [attr.data-faixa]="faixa(m.pct)">{{ pct(m.pct) }}</span>
+        </div>
+        <div class="trilho">
+          <div class="barra" [attr.data-faixa]="faixa(m.pct)" [style.width.%]="m.pct ?? 0"></div>
+        </div>
+        @if (m.assuntos.length) {
+          <div class="assuntos">
+            @for (a of m.assuntos; track a.assunto.id) {
+              <div class="assunto">
+                <span>{{ a.assunto.nome }}</span>
+                <div class="trilho fino">
+                  <div
+                    class="barra"
+                    [attr.data-faixa]="faixa(a.pct)"
+                    [style.width.%]="a.pct ?? 0"
+                  ></div>
+                </div>
+                <span class="pct-assunto">{{ pct(a.pct) }}</span>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    } @empty {
+      <p class="nota">Crie matérias e revise trechos para acompanhar a retenção.</p>
+    }
+  </section>
+
+  <section class="card bloco" aria-labelledby="titulo-historico">
+    <h2 class="card-kicker" id="titulo-historico">Histórico de revisões</h2>
+    @if (historico().length) {
+      <div class="rolagem">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Trecho</th>
+              <th>Acertos</th>
+              <th>Nota</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (h of historico(); track h.id) {
+              <tr>
+                <td class="data">{{ h.data }}</td>
+                <td>
+                  <div class="forte">{{ h.trecho }}</div>
+                  <div class="pequeno">{{ h.materia }}</div>
+                </td>
+                <td>{{ h.pct }}%</td>
+                <td>
+                  <span class="tag tag-nota" [attr.data-nota]="corNota(h.nota)">{{
+                    textoNota[h.nota]
+                  }}</span>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    } @else {
+      <p class="nota">
+        Nenhuma revisão ainda. <a routerLink="/revisao">Comece pela fila de hoje.</a>
+      </p>
+    }
+  </section>
+</div>
+
+<section class="card mapa" aria-labelledby="titulo-mapa">
+  <div class="mapa-topo">
+    <div class="mapa-intro">
+      <h2 class="card-kicker" id="titulo-mapa">Mapa de calor do resumo</h2>
+      <p class="nota">Lacunas mais erradas destacadas no texto.</p>
+    </div>
+    @if (opcoes().length > 1) {
+      <div class="seg" role="radiogroup" aria-label="Resumo do mapa de calor">
+        @for (r of opcoes(); track r.id) {
+          <label class="seg-opt">
+            <input
+              type="radio"
+              name="resumo-mapa"
+              [checked]="r.id === resumoDoMapa()?.id"
+              (change)="escolher(r.id)"
+            />
+            {{ r.titulo }}
+          </label>
+        }
+      </div>
+    }
+  </div>
+
+  @if (resumoDoMapa(); as resumo) {
+    <div class="legenda">
+      <span><span class="amostra" data-nivel="0"></span>Sem erros</span>
+      <span><span class="amostra" data-nivel="1"></span>Até 25%</span>
+      <span><span class="amostra" data-nivel="2"></span>25–50%</span>
+      <span><span class="amostra" data-nivel="3"></span>Acima de 50%</span>
+    </div>
+    @if (opcoes().length === 1) {
+      <p class="forte resumo-unico">{{ resumo.titulo }}</p>
+    }
+    @for (t of mapa(); track t.trecho.id) {
+      <div class="trecho">
+        <div class="trecho-topo">
+          <span class="tag tag-trecho">Trecho {{ t.trecho.num }}</span>
+          <span class="tag tag-taxa" [attr.data-faixa]="faixaTaxa(t.taxa)">{{ t.rotulo }}</span>
+        </div>
+        @for (b of t.trecho.blocos; track b.id) {
+          <app-block-view [bloco]="b" [lacuna]="calor()" />
+        }
+      </div>
+    }
+  } @else {
+    <p class="nota">O mapa aparece depois que você revisar algum trecho com lacunas.</p>
+  }
+</section>

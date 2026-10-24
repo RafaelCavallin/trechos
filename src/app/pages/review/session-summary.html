@@ -1,0 +1,71 @@
+<section class="fim">
+  <div class="abertura">
+    <div class="kicker kicker-sage">Sessão concluída</div>
+    <h1>{{ resumo().titulo }}</h1>
+  </div>
+  <div class="numeros">
+    <div class="card numero">
+      <span class="rotulo">Trechos revisados</span
+      ><span class="valor">{{ resumo().revisados }}</span>
+    </div>
+    <div class="card numero">
+      <span class="rotulo">Acertos</span
+      ><span class="valor">{{ resumo().acertos }}/{{ resumo().total }} · {{ resumo().pct }}%</span>
+    </div>
+    <div class="card numero">
+      <span class="rotulo">Voltam amanhã</span
+      ><span class="valor">{{ resumo().voltamAmanha.length }}</span>
+    </div>
+  </div>
+  <div class="card tabela-card">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Trecho</th>
+          <th>Matéria</th>
+          <th>Acertos</th>
+          <th>Nota</th>
+          <th>Próxima</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (l of resumo().linhas; track l.key) {
+          <tr>
+            <td class="forte">{{ l.titulo }}</td>
+            <td>{{ l.materia }}</td>
+            <td>{{ l.acertos }}/{{ l.total }}</td>
+            <td>
+              <span class="tag tag-nota" [attr.data-nota]="corNota(l.nota)">{{
+                textoNota[l.nota]
+              }}</span>
+            </td>
+            <td>{{ l.proxima }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  <div class="card volta">
+    <div class="card-kicker">Volta amanhã</div>
+    @for (v of resumo().voltam; track v.key) {
+      <div class="volta-item">
+        <span class="forte"
+          >{{ v.titulo }} <span class="fraco">· {{ v.materia }}</span></span
+        >
+        @if (v.erradas) {
+          <span class="erradas">{{ v.erradas }}</span>
+        }
+      </div>
+    } @empty {
+      <span class="fraco">Nenhum trecho volta amanhã.</span>
+    }
+  </div>
+  <div class="botoes">
+    <button type="button" class="btn btn-primary grande" (click)="inicio.emit()">
+      Voltar ao início
+    </button>
+    <button type="button" class="btn btn-secondary" (click)="estatisticas.emit()">
+      Ver estatísticas
+    </button>
+  </div>
+</section>

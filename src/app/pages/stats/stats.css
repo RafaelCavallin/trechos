@@ -1,0 +1,261 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  max-width: 1180px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 40px;
+}
+
+.grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(380px, 100%), 1fr));
+  gap: 22px;
+  align-items: start;
+}
+
+.bloco {
+  padding: 26px;
+  gap: 18px;
+}
+
+.card-kicker {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--color-accent-700);
+  font-weight: 700;
+}
+
+.nota {
+  margin: 0;
+  font-size: 14px;
+  color: var(--color-neutral-700);
+}
+
+.forte {
+  font-weight: 700;
+}
+
+.pequeno {
+  font-size: 12px;
+  color: var(--color-neutral-700);
+}
+
+.materia {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.materia-topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.nome-materia {
+  font-family: var(--font-heading);
+  font-size: 18px;
+}
+
+.pct {
+  font-family: var(--font-heading);
+  font-size: 20px;
+}
+
+.pct[data-faixa='nenhuma'] {
+  color: var(--color-neutral-700);
+}
+.pct[data-faixa='baixa'] {
+  color: var(--color-accent-700);
+}
+.pct[data-faixa='media'] {
+  color: var(--color-accent-2-700);
+}
+.pct[data-faixa='alta'] {
+  color: var(--color-accent-2-800);
+}
+
+.trilho {
+  height: 10px;
+  border-radius: 999px;
+  background: var(--color-neutral-200);
+  overflow: hidden;
+}
+
+.trilho.fino {
+  height: 6px;
+}
+
+.barra {
+  height: 100%;
+  border-radius: 999px;
+}
+
+.barra[data-faixa='baixa'] {
+  background: var(--color-accent);
+}
+.barra[data-faixa='media'] {
+  background: var(--color-accent-2-400);
+}
+.barra[data-faixa='alta'] {
+  background: var(--color-accent-2-600);
+}
+
+.assuntos {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-left: 14px;
+}
+
+.assunto {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 90px 40px;
+  gap: 10px;
+  align-items: center;
+  font-size: 13px;
+}
+
+.pct-assunto {
+  text-align: right;
+  font-weight: 700;
+}
+
+.rolagem {
+  overflow-x: auto;
+}
+
+.data {
+  white-space: nowrap;
+}
+
+.tag-nota {
+  font-weight: 700;
+}
+
+.tag-nota[data-nota='easy'] {
+  background: var(--color-accent-2-200);
+  color: var(--color-accent-2-800);
+}
+.tag-nota[data-nota='good'] {
+  background: var(--color-accent-2-100);
+  color: var(--color-accent-2-800);
+}
+.tag-nota[data-nota='hard'] {
+  background: var(--color-accent-100);
+  color: var(--color-accent-800);
+}
+.tag-nota[data-nota='again'] {
+  background: var(--color-accent-200);
+  color: var(--color-accent-900);
+}
+
+.mapa {
+  padding: 28px 30px;
+  gap: 18px;
+  background: var(--color-neutral-100);
+}
+
+.mapa-topo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.mapa-intro {
+  flex: 1;
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.seg {
+  flex-wrap: wrap;
+}
+
+.legenda {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: var(--color-neutral-800);
+}
+
+.legenda > span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.amostra {
+  width: 22px;
+  height: 12px;
+  border-radius: 999px;
+}
+
+.amostra[data-nivel='0'] {
+  background: var(--color-neutral-200);
+}
+.amostra[data-nivel='1'] {
+  background: var(--color-accent-100);
+}
+.amostra[data-nivel='2'] {
+  background: var(--color-accent-300);
+}
+.amostra[data-nivel='3'] {
+  background: var(--color-accent-400);
+}
+
+.resumo-unico {
+  margin: 0;
+}
+
+.trecho {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 8px;
+}
+
+.trecho-topo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.tag-trecho {
+  background: var(--color-accent-2-700);
+  color: var(--color-bg);
+  font-weight: 700;
+}
+
+.tag-taxa {
+  font-weight: 700;
+}
+
+.tag-taxa[data-faixa='nenhuma'] {
+  background: var(--color-neutral-200);
+  color: var(--color-neutral-800);
+}
+.tag-taxa[data-faixa='zero'] {
+  background: var(--color-accent-2-100);
+  color: var(--color-neutral-800);
+}
+.tag-taxa[data-faixa='baixa'] {
+  background: var(--color-accent-100);
+  color: var(--color-neutral-800);
+}
+.tag-taxa[data-faixa='alta'] {
+  background: var(--color-accent-300);
+  color: var(--color-accent-900);
+}

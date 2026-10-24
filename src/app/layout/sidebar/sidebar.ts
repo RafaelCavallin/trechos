@@ -8,10 +8,12 @@ import {
   LucideDynamicIcon,
   LucideHouse,
   LucideIcon,
+  LucideLogOut,
   LucideRotateCcw,
   LucideSlidersHorizontal,
 } from '@lucide/angular';
 import { filter, map } from 'rxjs';
+import { AuthService } from '../../core/auth.service';
 import { ReviewQueueService } from '../../core/review-queue.service';
 
 interface NavItem {
@@ -26,7 +28,7 @@ interface NavItem {
 /** Barra lateral fixa de 232px (design §4). */
 @Component({
   selector: 'app-sidebar',
-  imports: [RouterLink, NgTemplateOutlet, LucideDynamicIcon],
+  imports: [RouterLink, NgTemplateOutlet, LucideDynamicIcon, LucideLogOut],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -34,6 +36,7 @@ interface NavItem {
 export class Sidebar {
   private readonly router = inject(Router);
   protected readonly queue = inject(ReviewQueueService);
+  private readonly auth = inject(AuthService);
 
   protected readonly mainItems: NavItem[] = [
     { label: 'Início', path: '/', icon: LucideHouse },
@@ -61,5 +64,10 @@ export class Sidebar {
     return [item.path, ...(item.alsoActiveOn ?? [])].some(
       (p) => path === p || path.startsWith(p + '/'),
     );
+  }
+
+  protected async sair(): Promise<void> {
+    await this.auth.signOut();
+    await this.router.navigateByUrl('/entrar');
   }
 }

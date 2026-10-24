@@ -1,17 +1,25 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
-import { ReviewQueueService } from '../../core/review-queue.service';
+import { fakeAuth, provideFakeAuth, provideFakeQueue } from '../../testing/fakes';
 import { Sidebar } from './sidebar';
 
 @Component({ template: '' })
 class Blank {}
 
 describe('Sidebar', () => {
+  const dueCount = signal(0);
+  let auth: ReturnType<typeof fakeAuth>;
+
   beforeEach(() => {
+    dueCount.set(0);
+    auth = fakeAuth();
     TestBed.configureTestingModule({
       providers: [
+        provideFakeAuth(auth),
+        provideFakeQueue(dueCount),
         provideRouter([
+          { path: 'entrar', component: Blank },
           { path: '', component: Blank },
           { path: 'materias', component: Blank },
           { path: 'resumos/:id', component: Blank },
@@ -39,13 +47,19 @@ describe('Sidebar', () => {
   });
 
   it('mostra o badge da fila só quando há trechos', async () => {
-    const queue = TestBed.inject(ReviewQueueService);
     const fixture = TestBed.createComponent(Sidebar);
     await fixture.whenStable();
     const el = fixture.nativeElement as HTMLElement;
     expect(el.querySelector('.badge')).toBeNull();
-    queue.dueCount.set(5);
+    dueCount.set(5);
     await fixture.whenStable();
     expect(el.querySelector('.badge')?.textContent).toContain('5');
+  });
+
+  it('Sair encerra a sessão e volta para a tela de entrar', async () => {
+    const el = await renderAt('/');
+    (el.querySelector('.sair') as HTMLButtonElement).click();
+    await vi.waitFor(() => expect(TestBed.inject(Router).url).toBe('/entrar'));
+    expect(auth.signOut).toHaveBeenCalled();
   });
 });

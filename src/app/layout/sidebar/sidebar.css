@@ -64,6 +64,15 @@ nav {
   white-space: nowrap;
 }
 
+.sair {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  color: var(--color-neutral-700);
+}
+
 .nav-link:hover {
   background: color-mix(in srgb, var(--color-text) 7%, transparent);
 }
@@ -109,14 +118,17 @@ nav {
   }
 
   .nav-link {
+    position: relative;
     padding: 9px 12px;
   }
 
-  .nav-label {
-    display: none;
-  }
-
-  .nav-link.active .nav-label {
-    display: inline;
+  /* Só o ícone aparece, mas o nome continua lá para leitores de tela. */
+  .nav-link:not(.active) .nav-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 }

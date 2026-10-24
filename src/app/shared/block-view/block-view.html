@@ -1,0 +1,103 @@
+<ng-template #segmentos let-segs>
+  @for (s of segs; track $index) {
+    @if (s.k === 't') {
+      @if (s.b) {
+        <strong>{{ s.t }}</strong>
+      } @else {
+        {{ s.t }}
+      }
+    } @else {
+      @let v = visual(s);
+      @if (v.clicavel) {
+        <button
+          type="button"
+          class="lacuna"
+          [attr.data-estado]="v.estado"
+          [attr.data-lacuna]="s.id"
+          [attr.data-focado]="v.focado ? '' : null"
+          [title]="v.titulo ?? ''"
+          [attr.aria-label]="oculta(v) ? 'Lacuna ' + (v.numero ?? '') : null"
+          (click)="lacunaClicada.emit(s.id)"
+        >
+          {{ oculta(v) ? (v.numero ?? '…') : s.t }}
+        </button>
+      } @else {
+        <span
+          class="lacuna"
+          [attr.data-estado]="v.estado"
+          [attr.data-lacuna]="s.id"
+          [attr.data-focado]="v.focado ? '' : null"
+          [attr.title]="v.titulo ?? null"
+          [attr.aria-label]="oculta(v) ? 'Lacuna ' + (v.numero ?? '') : null"
+          >{{ oculta(v) ? (v.numero ?? '…') : s.t }}</span
+        >
+      }
+    }
+  }
+</ng-template>
+
+@let b = bloco();
+@switch (b.type) {
+  @case ('h2') {
+    <div class="bloco bloco-h2">
+      <ng-container *ngTemplateOutlet="segmentos; context: { $implicit: b.segs }" />
+    </div>
+  }
+  @case ('h3') {
+    <div class="bloco bloco-h3">
+      <ng-container *ngTemplateOutlet="segmentos; context: { $implicit: b.segs }" />
+    </div>
+  }
+  @case ('p') {
+    <p class="bloco">
+      <ng-container *ngTemplateOutlet="segmentos; context: { $implicit: b.segs }" />
+    </p>
+  }
+  @case ('quote') {
+    <blockquote class="bloco bloco-quote">
+      <div><ng-container *ngTemplateOutlet="segmentos; context: { $implicit: b.segs }" /></div>
+    </blockquote>
+  }
+  @case ('special') {
+    <div class="bloco bloco-especial" [attr.data-kind]="b.kind">
+      <div class="rotulo">{{ rotuloEspecial[b.kind] }}</div>
+      <div><ng-container *ngTemplateOutlet="segmentos; context: { $implicit: b.segs }" /></div>
+    </div>
+  }
+  @case ('list') {
+    <div class="bloco bloco-lista">
+      <ul>
+        @for (item of b.items; track $index) {
+          <li><ng-container *ngTemplateOutlet="segmentos; context: { $implicit: item }" /></li>
+        }
+      </ul>
+    </div>
+  }
+  @case ('table') {
+    <div class="bloco bloco-tabela">
+      <table>
+        @if (b.rows.length) {
+          <thead>
+            <tr>
+              @for (cel of b.rows[0]; track $index) {
+                <th><ng-container *ngTemplateOutlet="segmentos; context: { $implicit: cel }" /></th>
+              }
+            </tr>
+          </thead>
+        }
+        <tbody>
+          @for (row of b.rows.slice(1); track $index) {
+            <tr>
+              @for (cel of row; track $index) {
+                <td><ng-container *ngTemplateOutlet="segmentos; context: { $implicit: cel }" /></td>
+              }
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+  @case ('attach') {
+    <app-attachment [bloco]="b" />
+  }
+}

@@ -1,0 +1,280 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  max-width: 980px;
+}
+
+.topo {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.intro {
+  flex: 1;
+  min-width: 240px;
+}
+
+.intro h1 {
+  margin: 0;
+  font-size: 40px;
+}
+
+.intro p {
+  margin: 4px 0 0;
+  color: var(--color-neutral-700);
+}
+
+.nova {
+  padding: 12px 20px;
+}
+
+.aviso {
+  padding: 24px 28px;
+  align-items: flex-start;
+}
+
+.aviso p {
+  margin: 0;
+}
+
+.materias {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.materia {
+  padding: 10px;
+  gap: 2px;
+}
+
+.linha {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 999px;
+}
+
+.linha-materia {
+  padding: 8px 10px;
+}
+
+.linha-assunto {
+  padding: 6px 10px;
+}
+
+.linha-resumo {
+  padding: 4px 10px;
+}
+
+.alca {
+  display: flex;
+  color: var(--color-neutral-600);
+  cursor: grab;
+}
+
+.expandir {
+  width: 30px;
+  height: 30px;
+}
+
+.expandir svg {
+  transition: transform 0.15s;
+}
+
+.expandir[aria-expanded='true'] svg {
+  transform: rotate(90deg);
+}
+
+.nome {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+}
+
+.nome-materia {
+  font-size: 21px;
+  line-height: 1.3;
+}
+
+.nome-assunto {
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.renomear {
+  max-width: 380px;
+}
+
+.retencao {
+  min-width: 56px;
+  text-align: right;
+  font-family: var(--font-heading);
+  font-size: 19px;
+}
+
+.retencao[data-faixa='nenhuma'] {
+  color: var(--color-neutral-700);
+}
+.retencao[data-faixa='baixa'] {
+  color: var(--color-accent-700);
+}
+.retencao[data-faixa='media'] {
+  color: var(--color-accent-2-700);
+}
+.retencao[data-faixa='alta'] {
+  color: var(--color-accent-2-800);
+}
+
+.tag-retencao {
+  min-width: 52px;
+  justify-content: center;
+  font-weight: 700;
+  background: var(--color-accent-2-100);
+  color: var(--color-accent-2-800);
+}
+
+.tag-retencao[data-faixa='nenhuma'] {
+  background: var(--color-neutral-200);
+  color: var(--color-neutral-700);
+}
+
+.tag-retencao[data-faixa='baixa'] {
+  background: var(--color-accent-100);
+  color: var(--color-accent-800);
+}
+
+.meta {
+  font-size: 13px;
+  color: var(--color-neutral-700);
+  white-space: nowrap;
+}
+
+.meta.pequeno {
+  font-size: 12px;
+}
+
+.acao:hover {
+  background: var(--color-neutral-200);
+}
+
+.acao.excluir:hover {
+  background: var(--color-accent-100);
+}
+
+.pequeno.btn-icon {
+  width: 30px;
+  height: 30px;
+}
+
+.menor.btn-icon {
+  width: 28px;
+  height: 28px;
+}
+
+.assuntos {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 0 6px 40px;
+}
+
+.vazio {
+  margin: 0;
+  padding: 8px 12px;
+  font-size: 14px;
+  color: var(--color-neutral-700);
+}
+
+.resumos {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-left: 34px;
+}
+
+.abrir-resumo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+.abrir-resumo:hover {
+  color: var(--color-accent-700);
+}
+
+.titulo {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Arrastar: o lugar onde o item vai cair fica destacado (design §5.2). */
+.cdk-drag-placeholder {
+  background: var(--color-accent-200);
+  border-radius: 24px;
+}
+
+.cdk-drag-placeholder > * {
+  opacity: 0;
+}
+
+.cdk-drag-preview {
+  box-shadow: var(--shadow-lg);
+  border-radius: 24px;
+  background: var(--color-surface);
+}
+
+.cdk-drag-animating,
+.cdk-drop-list-dragging .cdk-drag:not(.cdk-drag-placeholder) {
+  transition: transform 0.2s ease;
+}
+
+@media (max-width: 760px) {
+  .assuntos {
+    padding-left: 16px;
+  }
+
+  .resumos {
+    padding-left: 16px;
+  }
+
+  /* O nome ocupa a primeira linha; tags, retenção e botões descem para a segunda. */
+  .linha {
+    flex-wrap: wrap;
+    row-gap: 4px;
+  }
+
+  .linha-materia .nome {
+    flex-basis: calc(100% - 70px);
+  }
+
+  .linha-assunto .nome,
+  .linha-resumo .nome {
+    flex-basis: calc(100% - 30px);
+  }
+
+  .linha-materia .nome + * {
+    margin-left: 38px;
+  }
+
+  .linha-resumo .nome + * {
+    margin-left: 22px;
+  }
+
+  .retencao {
+    min-width: 0;
+  }
+
+  .nome-materia {
+    overflow-wrap: anywhere;
+  }
+}

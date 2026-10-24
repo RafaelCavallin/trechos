@@ -142,7 +142,7 @@ p {
   margin: 0 0 var(--space-3);
 }
 a {
-  color: var(--color-accent);
+  color: var(--color-accent-700);
   text-underline-offset: 3px;
 }
 img {
@@ -155,16 +155,16 @@ figure {
 figcaption {
   font-size: 11px;
   margin-top: var(--space-1);
-  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  color: color-mix(in srgb, var(--color-text) 72%, transparent);
 }
 .text-muted {
-  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  color: color-mix(in srgb, var(--color-text) 72%, transparent);
 }
 :focus {
   outline: none;
 }
 :focus-visible {
-  outline: 2px solid var(--color-accent);
+  outline: 2px solid var(--color-accent-700);
   outline-offset: 2px;
 }
 ::selection {
@@ -208,14 +208,14 @@ figcaption {
   cursor: not-allowed;
 }
 .btn-primary {
-  background: var(--color-accent);
+  background: var(--color-accent-700);
   color: var(--color-bg);
 }
 .btn-primary:hover {
-  background: var(--color-accent-600);
+  background: var(--color-accent-800);
 }
 .btn-primary:active {
-  background: var(--color-accent-700);
+  background: var(--color-accent-900);
 }
 .btn-secondary {
   border-color: var(--color-divider);
@@ -227,7 +227,7 @@ figcaption {
   background: color-mix(in srgb, var(--color-text) 14%, transparent);
 }
 .btn-ghost {
-  color: var(--color-accent);
+  color: var(--color-accent-700);
   padding-inline: var(--space-1);
 }
 .btn-ghost:hover {
@@ -307,7 +307,7 @@ textarea.input {
   box-shadow: inset 0 0 0 4px var(--color-bg);
 }
 .radio input:focus-visible + .dot {
-  outline: 2px solid var(--color-accent);
+  outline: 2px solid var(--color-accent-700);
   outline-offset: 2px;
 }
 .seg {
@@ -328,14 +328,14 @@ textarea.input {
   border-left: 1px solid var(--color-divider);
 }
 .seg-opt:has(input:checked) {
-  background: var(--color-accent);
+  background: var(--color-accent-700);
   color: var(--color-bg);
 }
 .seg-opt:not(:has(input:checked)):hover {
   background: color-mix(in srgb, var(--color-text) 7%, transparent);
 }
 .seg-opt:has(input:focus-visible) {
-  outline: 2px solid var(--color-accent);
+  outline: 2px solid var(--color-accent-700);
   outline-offset: -2px;
 }
 
@@ -352,7 +352,7 @@ textarea.input {
   font-size: 10px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--color-accent);
+  color: var(--color-accent-700);
 }
 .card-title {
   font-family: var(--font-heading);
@@ -406,7 +406,7 @@ textarea.input {
 }
 .tag-outline {
   border: 1px solid var(--color-accent);
-  color: var(--color-accent);
+  color: var(--color-accent-700);
 }
 
 /* — navigation — */
@@ -430,7 +430,7 @@ textarea.input {
 }
 .nav a:hover,
 .nav a[aria-current='page'] {
-  color: var(--color-accent);
+  color: var(--color-accent-700);
 }
 
 /* — tables — */
@@ -444,7 +444,7 @@ textarea.input {
   font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--color-text) 60%, transparent);
+  color: color-mix(in srgb, var(--color-text) 72%, transparent);
   padding: var(--space-2);
   border-bottom: 1px solid var(--color-divider);
 }
@@ -553,4 +553,246 @@ svg.lucide {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   Blocos do resumo (design §5.3). Valem no editor (TipTap) e na revisão.
+   ══════════════════════════════════════════════════════════════════════ */
+
+.bloco {
+  font-size: 16px;
+  line-height: 1.8;
+  color: var(--color-text);
+  text-wrap: pretty;
+  overflow-wrap: anywhere;
+}
+
+.bloco p {
+  margin: 0;
+}
+
+.bloco .ProseMirror {
+  outline: none;
+  white-space: pre-wrap;
+}
+
+.bloco .ProseMirror p.is-empty::before {
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+  color: var(--color-neutral-700);
+}
+
+.bloco-h2 {
+  font-family: var(--font-heading);
+  font-size: 26px;
+  line-height: 1.25;
+  padding: 2px 0;
+}
+
+.bloco-h3 {
+  font-family: var(--font-heading);
+  font-size: 20px;
+  line-height: 1.3;
+  padding: 2px 0;
+  color: var(--color-neutral-800);
+}
+
+.bloco-quote {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  gap: 6px;
+  font-style: italic;
+  color: var(--color-neutral-800);
+}
+
+.bloco-quote::before {
+  content: '“';
+  font-family: var(--font-heading);
+  font-size: 46px;
+  line-height: 0.9;
+  font-style: normal;
+  color: var(--color-accent);
+}
+
+.bloco-quote .lacuna {
+  font-style: normal;
+}
+
+.bloco-especial {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 20px;
+  border-radius: 24px;
+  border: 1.5px solid;
+}
+
+.bloco-especial .rotulo {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.bloco-especial[data-kind='pegadinha'] {
+  background: var(--color-accent-100);
+  border-color: var(--color-accent-300);
+}
+.bloco-especial[data-kind='pegadinha'] .rotulo {
+  color: var(--color-accent-800);
+}
+
+.bloco-especial[data-kind='excecao'] {
+  background: var(--color-accent-2-100);
+  border-color: var(--color-accent-2-300);
+}
+.bloco-especial[data-kind='excecao'] .rotulo {
+  color: var(--color-accent-2-800);
+}
+
+.bloco-especial[data-kind='exemplo'] {
+  background: var(--color-neutral-100);
+  border-color: var(--color-neutral-300);
+}
+.bloco-especial[data-kind='exemplo'] .rotulo {
+  color: var(--color-neutral-800);
+}
+
+.bloco-especial[data-kind='analogia'] {
+  background: var(--color-accent-2-100);
+  border-color: var(--color-accent-2-200);
+}
+.bloco-especial[data-kind='analogia'] .rotulo {
+  color: var(--color-accent-2-800);
+}
+
+.bloco-lista ul {
+  margin: 0;
+  padding-left: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.bloco-tabela {
+  border-radius: 22px;
+  overflow-x: auto;
+  background: var(--color-neutral-100);
+  padding: 4px 8px;
+}
+
+.bloco-tabela table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.bloco-tabela th {
+  text-align: left;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-text) 72%, transparent);
+  padding: var(--space-2);
+  border-bottom: 1px solid var(--color-divider);
+}
+
+.bloco-tabela td {
+  padding: var(--space-2);
+  vertical-align: top;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-text) 8%, transparent);
+}
+
+.bloco-tabela tr:last-child td {
+  border-bottom: 0;
+}
+
+.bloco-tabela .selectedCell {
+  background: var(--color-accent-100);
+}
+
+/* — Lacunas: pílula tracejada; a cor depende do estado (tabela do design §5.3) — */
+.lacuna {
+  padding: 1px 9px;
+  border-radius: 999px;
+  border: 1.5px dashed var(--color-accent-400);
+  background: var(--color-accent-200);
+  color: var(--color-accent-800);
+  font-weight: 600;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+.lacuna[data-estado='oculta'] {
+  background: var(--color-neutral-300);
+  color: var(--color-neutral-800);
+  border-color: var(--color-neutral-400);
+}
+
+.lacuna[data-estado='oculta-dinamica'] {
+  background: var(--color-accent-2-200);
+  color: var(--color-accent-2-800);
+  border-color: var(--color-accent-2-400);
+}
+
+.lacuna[data-estado='revelada'] {
+  background: var(--color-neutral-100);
+  color: var(--color-text);
+  border-color: var(--color-accent-400);
+}
+
+.lacuna[data-estado='revelada-dinamica'] {
+  background: var(--color-neutral-100);
+  color: var(--color-text);
+  border-color: var(--color-accent-2-500);
+}
+
+.lacuna[data-estado='acertou'] {
+  background: var(--color-accent-2-200);
+  color: var(--color-accent-2-900);
+  border-color: var(--color-accent-2-500);
+}
+
+.lacuna[data-estado='errou'] {
+  background: var(--color-accent-300);
+  color: var(--color-accent-900);
+  border-color: var(--color-accent-600);
+}
+
+.lacuna[data-estado='calor-0'] {
+  background: var(--color-neutral-200);
+  color: var(--color-text);
+  border-color: var(--color-neutral-300);
+}
+
+.lacuna[data-estado='calor-1'] {
+  background: var(--color-accent-100);
+  color: var(--color-text);
+  border-color: var(--color-accent-500);
+}
+
+.lacuna[data-estado='calor-2'] {
+  background: var(--color-accent-300);
+  color: var(--color-text);
+  border-color: var(--color-accent-500);
+}
+
+.lacuna[data-estado='calor-3'] {
+  background: var(--color-accent-400);
+  color: var(--color-accent-900);
+  border-color: var(--color-accent-500);
+}
+
+button.lacuna {
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.lacuna[data-focado] {
+  outline: 2px solid var(--color-accent-700);
+  outline-offset: 2px;
 }

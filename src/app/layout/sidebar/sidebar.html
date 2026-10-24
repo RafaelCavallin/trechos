@@ -14,6 +14,12 @@
   <div class="spacer"></div>
   <ul class="nav-list">
     <li><ng-container *ngTemplateOutlet="link; context: { $implicit: settingsItem }" /></li>
+    <li>
+      <button type="button" class="nav-link sair" (click)="sair()">
+        <svg lucideLogOut [size]="18" aria-hidden="true"></svg>
+        <span class="nav-label">Sair</span>
+      </button>
+    </li>
   </ul>
 </nav>
 

@@ -1,0 +1,73 @@
+<header class="abertura">
+  <div class="kicker">{{ data() }}</div>
+  <h1>{{ titulo() }}</h1>
+  <p class="sub">{{ subtitulo() }}</p>
+</header>
+
+<div class="grade">
+  <section class="card bloco" aria-labelledby="titulo-revisoes">
+    <h2 class="card-kicker" id="titulo-revisoes">Revisões de hoje</h2>
+    @if (total()) {
+      <ul class="revisoes">
+        @for (r of revisoes(); track r.id) {
+          <li class="revisao">
+            <span class="ponto" [style.background]="r.ponto" aria-hidden="true"></span>
+            <span class="nome">{{ r.nome }}</span>
+            <span class="rotulo">{{ r.rotulo }}</span>
+          </li>
+        }
+      </ul>
+      <button type="button" class="btn btn-primary grande" (click)="iniciar()">
+        <svg lucidePlay [size]="16" aria-hidden="true"></svg>
+        {{ sessaoEmAndamento() ? 'Continuar sessão' : 'Iniciar sessão · ~' + minutos() + ' min' }}
+      </button>
+      <p class="nota">
+        Trechos de matérias diferentes, intercalados. Limite diário:
+        {{ store.config().limiteDiario }} trechos.
+      </p>
+    } @else {
+      <div class="em-dia">
+        Nada mais para hoje. As próximas revisões já estão agendadas pelo FSRS.
+      </div>
+    }
+  </section>
+
+  <section class="card bloco" aria-labelledby="titulo-saude">
+    <h2 class="card-kicker" id="titulo-saude">Saúde das matérias</h2>
+    @for (m of saude(); track m.nome) {
+      <div class="saude">
+        <div class="saude-topo">
+          <span class="nome">{{ m.nome }}</span>
+          <span class="pct" [attr.data-faixa]="m.faixa">{{ m.pct }}%</span>
+        </div>
+        <div class="trilho">
+          <div class="barra" [attr.data-faixa]="m.faixa" [style.width.%]="m.pct"></div>
+        </div>
+      </div>
+    } @empty {
+      <p class="nota">Revise alguns trechos para ver a saúde de cada matéria.</p>
+    }
+    @if (saude().length) {
+      <p class="nota">Retenção estimada, da menor para a maior — o que revisar primeiro.</p>
+    }
+  </section>
+</div>
+
+<section class="card bloco" aria-labelledby="titulo-fracos">
+  <h2 class="card-kicker" id="titulo-fracos">Pontos fracos</h2>
+  @if (pontosFracos().length) {
+    <div class="fracos">
+      @for (p of pontosFracos(); track p.id) {
+        <a class="fraco" [routerLink]="['/resumos', p.resumoId]">
+          <span class="tag tag-accent lacuna-fraca">{{ p.texto }}</span>
+          <span class="onde">{{ p.trechoTitulo }} · {{ p.materia }}</span>
+          <span class="taxa">{{ p.descricao }}</span>
+        </a>
+      }
+    </div>
+  } @else {
+    <p class="nota">
+      Nenhum ponto fraco por enquanto. Lacunas erradas em pelo menos 3 revisões aparecem aqui.
+    </p>
+  }
+</section>

@@ -1,0 +1,276 @@
+@if (resumo(); as r) {
+  <nav class="caminho" aria-label="Caminho">
+    <a class="btn btn-ghost" routerLink="/materias">Matérias</a>
+    <span aria-hidden="true">›</span>
+    <span>{{ caminho().materia }}</span>
+    <span aria-hidden="true">›</span>
+    <span>{{ caminho().assunto }}</span>
+  </nav>
+
+  <header class="topo">
+    <h1>{{ r.titulo }}</h1>
+    <div class="tags">
+      <span class="salvamento" [attr.data-estado]="salvamento()" role="status">
+        @switch (salvamento()) {
+          @case ('salvo') {
+            Salvo
+          }
+          @case ('erro') {
+            Não salvo —
+            <button type="button" class="btn btn-ghost" (click)="salvar()">tentar de novo</button>
+          }
+          @default {
+            Salvando…
+          }
+        }
+      </span>
+      <span class="tag tag-accent-2 forte">{{ visao().totais.trechos }}</span>
+      <span class="tag tag-accent forte">{{ visao().totais.itens }}</span>
+      @if (visao().totais.avisos; as avisos) {
+        <span class="tag tag-outline avisos">{{ avisos }}</span>
+      }
+    </div>
+  </header>
+
+  <div
+    class="toolbar"
+    role="toolbar"
+    aria-label="Ferramentas do editor"
+    (mousedown)="$event.preventDefault()"
+  >
+    <button
+      class="btn"
+      type="button"
+      title="Novo título — inicia um trecho"
+      (click)="inserir('h2')"
+    >
+      Título
+    </button>
+    <button class="btn" type="button" (click)="inserir('h3')">Subtítulo</button>
+    <button class="btn" type="button" (click)="inserir('p')">Parágrafo</button>
+    <button
+      class="btn negrito"
+      type="button"
+      title="Negrito na seleção (Ctrl+B)"
+      aria-label="Negrito"
+      (click)="negrito()"
+    >
+      B
+    </button>
+    <button class="btn" type="button" (click)="inserir('list')">Lista</button>
+    <button class="btn" type="button" (click)="inserir('table')">Tabela</button>
+    <button class="btn" type="button" (click)="inserir('quote')">Citação</button>
+    <span class="separador"></span>
+    <button
+      class="btn btn-primary"
+      type="button"
+      [title]="
+        cursorNaLacuna()
+          ? 'Desfaz a lacuna onde está o cursor (Ctrl+Shift+H)'
+          : 'Selecione um texto e oculte como lacuna (Ctrl+Shift+H)'
+      "
+      (click)="ocultar()"
+    >
+      @if (cursorNaLacuna()) {
+        <svg lucideEye [size]="16" aria-hidden="true"></svg>
+        Desocultar
+      } @else {
+        <svg lucideEyeOff [size]="16" aria-hidden="true"></svg>
+        Ocultar
+      }
+    </button>
+    <span class="separador"></span>
+    <button class="btn especial" data-kind="pegadinha" type="button" (click)="inserir('pegadinha')">
+      Pegadinha
+    </button>
+    <button class="btn especial" data-kind="excecao" type="button" (click)="inserir('excecao')">
+      Exceção
+    </button>
+    <button class="btn" type="button" (click)="inserir('exemplo')">Exemplo</button>
+    <button class="btn especial" data-kind="analogia" type="button" (click)="inserir('analogia')">
+      Analogia
+    </button>
+    <span class="separador"></span>
+    <button class="btn" type="button" (click)="campoImagem.click()">
+      <svg lucideImage [size]="15" aria-hidden="true"></svg>
+      Imagem
+    </button>
+    <button class="btn" type="button" (click)="campoArquivo.click()">
+      <svg lucidePaperclip [size]="15" aria-hidden="true"></svg>
+      Arquivo
+    </button>
+    <input #campoImagem type="file" accept="image/*" hidden (change)="anexar('image', $event)" />
+    <input #campoArquivo type="file" hidden (change)="anexar('file', $event)" />
+  </div>
+
+  <p class="dica">
+    Selecione uma expressão no texto — inclusive dentro de células de tabela — e clique em
+    <strong>Ocultar</strong> para transformá-la em lacuna. Clique num bloco para editá-lo ou
+    adicionar perguntas na margem.
+  </p>
+
+  <div class="corpo">
+    <nav class="lista-trechos" aria-label="Trechos">
+      <div class="titulo-lista">Trechos</div>
+      @for (t of visao().lista; track t.id) {
+        <button type="button" class="item-trecho" (click)="irPara(t.id)">
+          <span class="rotulo">{{ t.rotulo }}</span>
+          <span class="meta" [class.alerta]="t.alerta">{{ t.meta }}</span>
+        </button>
+      }
+    </nav>
+
+    <div class="conteudo">
+      @for (linha of visao().linhas; track linha.bloco.id) {
+        @let id = linha.bloco.id;
+        <div class="grupo" [attr.data-trecho]="linha.cabecalho?.trecho?.id ?? null">
+          @if (linha.cabecalho; as c) {
+            <div class="cabecalho">
+              <div class="pilula">
+                <span class="tag tag-trecho">Trecho {{ c.trecho.num }}</span>
+                <span class="meta">{{ c.meta }}</span>
+                @if (c.podeJuntar) {
+                  <button type="button" class="btn btn-ghost acao-trecho" (click)="juntar(id)">
+                    Juntar ao anterior
+                  </button>
+                }
+              </div>
+              @for (aviso of c.avisos; track aviso.tipo) {
+                <div class="aviso" role="note">
+                  <svg lucideTriangleAlert [size]="16" aria-hidden="true"></svg>
+                  <span class="texto-aviso">{{ aviso.mensagem }}</span>
+                  @if (aviso.tipo === 'limite') {
+                    @if (aviso.podeDividir) {
+                      <button
+                        type="button"
+                        class="btn btn-secondary"
+                        (click)="dividirPorSubtitulos(c.trecho)"
+                      >
+                        Dividir pelos subtítulos
+                      </button>
+                    } @else {
+                      <span class="sem-subtitulos">Adicione subtítulos para poder dividir.</span>
+                    }
+                  }
+                </div>
+              }
+            </div>
+          }
+          @if (linha.juntado) {
+            <div class="juntado">
+              <span class="tag tag-neutral">Juntado ao trecho anterior</span>
+              <button type="button" class="btn btn-ghost" (click)="separar(id)">Separar</button>
+            </div>
+          }
+
+          <div class="linha">
+            <div
+              class="area-bloco"
+              [attr.tabindex]="linha.bloco.type === 'attach' ? 0 : -1"
+              [attr.aria-label]="anexo(linha.bloco) ? 'Anexo: ' + anexo(linha.bloco)!.name : null"
+              [class.selecionado]="selecionado() === id"
+              (click)="selecionar(id)"
+              (keydown.enter)="selecionar(id)"
+            >
+              @if (texto(linha.bloco); as tb) {
+                <app-block-editor
+                  [bloco]="tb"
+                  [focoInicial]="focoInicial(id)"
+                  (mudou)="aoMudar($event)"
+                  (focou)="aoFocar(tb)"
+                  (saiu)="aoSair(id)"
+                  (dividir)="aoDividir(tb, $event)"
+                  (apagarVazio)="aoApagarVazio(tb)"
+                  (lacunaNoCursor)="aoMoverCursor(id, $event)"
+                />
+              } @else if (anexo(linha.bloco); as a) {
+                <app-attachment [bloco]="a" />
+              }
+              @if (selecionado() === id) {
+                <div class="acoes" (mousedown)="$event.preventDefault()">
+                  @if (linha.bloco.type !== 'attach') {
+                    <button type="button" class="btn btn-ghost" (click)="abrirPergunta(id)">
+                      + Pergunta na margem
+                    </button>
+                  }
+                  @if (linha.bloco.type === 'table') {
+                    <button type="button" class="btn btn-ghost" (click)="tabela(id, 'linha+')">
+                      + Linha
+                    </button>
+                    <button type="button" class="btn btn-ghost" (click)="tabela(id, 'coluna+')">
+                      + Coluna
+                    </button>
+                    <button type="button" class="btn btn-ghost" (click)="tabela(id, 'linha-')">
+                      − Linha
+                    </button>
+                    <button type="button" class="btn btn-ghost" (click)="tabela(id, 'coluna-')">
+                      − Coluna
+                    </button>
+                  }
+                  <button type="button" class="btn btn-ghost" (click)="mover(id, -1)">Subir</button>
+                  <button type="button" class="btn btn-ghost" (click)="mover(id, 1)">Descer</button>
+                  <button type="button" class="btn btn-ghost" (click)="excluirBloco(linha.bloco)">
+                    Excluir bloco
+                  </button>
+                </div>
+              }
+            </div>
+
+            <div class="margem">
+              @for (q of linha.bloco.qs ?? []; track q.id) {
+                @if (perguntaEditada() === q.id) {
+                  <app-question-form
+                    [inicial]="q"
+                    (salvar)="salvarEdicao(id, q.id, $event)"
+                    (cancelar)="perguntaEditada.set(null)"
+                  />
+                } @else {
+                  <div class="pergunta">
+                    <div class="pergunta-topo">
+                      <span class="q">{{ q.q }}</span>
+                      <button
+                        type="button"
+                        class="acao-pergunta"
+                        title="Editar pergunta"
+                        aria-label="Editar pergunta"
+                        (click)="editarPergunta(q.id)"
+                      >
+                        <svg lucidePencil [size]="14" aria-hidden="true"></svg>
+                      </button>
+                      <button
+                        type="button"
+                        class="acao-pergunta"
+                        title="Remover pergunta"
+                        aria-label="Remover pergunta"
+                        (click)="removerPergunta(id, q.id)"
+                      >
+                        <svg lucideX [size]="14" aria-hidden="true"></svg>
+                      </button>
+                    </div>
+                    @if (q.a) {
+                      <span class="a">{{ q.a }}</span>
+                    }
+                  </div>
+                }
+              }
+              @if (perguntaEm() === id) {
+                <app-question-form
+                  (salvar)="salvarPergunta(id, $event)"
+                  (cancelar)="perguntaEm.set(null)"
+                />
+              }
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+} @else if (store.status() === 'pronto') {
+  <div class="card nao-encontrado">
+    <p class="card-title">Resumo não encontrado.</p>
+    <p>Ele pode ter sido excluído.</p>
+    <a class="btn btn-secondary" routerLink="/materias">Voltar para Matérias</a>
+  </div>
+} @else {
+  <p class="text-muted">Carregando…</p>
+}

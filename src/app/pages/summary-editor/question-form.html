@@ -1,0 +1,25 @@
+<form
+  class="form-pergunta"
+  (submit)="$event.preventDefault(); enviar()"
+  (keydown.escape)="cancelar.emit()"
+>
+  <input
+    class="input"
+    placeholder="Pergunta"
+    aria-label="Pergunta"
+    appAutofocus
+    [value]="q()"
+    (input)="q.set(valor($event))"
+  />
+  <input
+    class="input"
+    placeholder="Resposta esperada"
+    aria-label="Resposta esperada"
+    [value]="a()"
+    (input)="a.set(valor($event))"
+  />
+  <div class="botoes">
+    <button type="button" class="btn btn-secondary" (click)="cancelar.emit()">Cancelar</button>
+    <button type="submit" class="btn btn-primary" [disabled]="!q().trim()">Salvar</button>
+  </div>
+</form>

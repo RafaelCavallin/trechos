@@ -1,0 +1,117 @@
+:host {
+  display: block;
+  max-width: 980px;
+}
+
+.fim {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 42px;
+}
+
+.forte {
+  font-weight: 700;
+}
+
+.fraco {
+  color: var(--color-neutral-700);
+}
+
+.abertura {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.kicker-sage {
+  color: var(--color-accent-2-700);
+}
+
+.botoes {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.grande {
+  padding: 12px 22px;
+}
+
+.card-kicker {
+  color: var(--color-accent-700);
+  font-weight: 700;
+}
+
+.tag-nota {
+  font-weight: 700;
+}
+
+.tag-nota[data-nota='easy'] {
+  background: var(--color-accent-2-200);
+  color: var(--color-accent-2-800);
+}
+.tag-nota[data-nota='good'] {
+  background: var(--color-accent-2-100);
+  color: var(--color-accent-2-800);
+}
+.tag-nota[data-nota='hard'] {
+  background: var(--color-accent-100);
+  color: var(--color-accent-800);
+}
+.tag-nota[data-nota='again'] {
+  background: var(--color-accent-200);
+  color: var(--color-accent-900);
+}
+
+.numeros {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+}
+
+.numero {
+  padding: 20px 24px;
+  gap: 2px;
+}
+
+.numero .rotulo {
+  font-size: 13px;
+  color: var(--color-neutral-700);
+}
+
+.numero .valor {
+  font-family: var(--font-heading);
+  font-size: 32px;
+}
+
+.tabela-card {
+  padding: 22px 24px;
+  overflow-x: auto;
+}
+
+.volta {
+  padding: 22px 24px;
+  gap: 10px;
+}
+
+.volta-item {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 16px;
+  border-radius: 22px;
+  background: var(--color-bg);
+}
+
+.volta-item .fraco {
+  font-weight: 400;
+}
+
+.erradas {
+  font-size: 13px;
+  color: var(--color-accent-800);
+}
