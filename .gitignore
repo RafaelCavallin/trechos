@@ -48,3 +48,7 @@ Thumbs.db
 # Protótipo e especificação (ficam só na máquina local)
 /Sistema de Resumos prototype
 /Sistema de Resumos prototype.zip
+
+# Playwright
+/test-results
+/playwright-report
