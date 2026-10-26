@@ -1,9 +1,11 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { LucidePlay } from '@lucide/angular';
+import { AuthService } from '../../core/auth.service';
 import { ReviewQueueService } from '../../core/review-queue.service';
 import { StudyStore } from '../../core/study-store';
 import { healthBand } from '../../domain/health';
+import { saudacao } from '../../domain/usuario';
 import { ReviewSessionService } from '../../review/review-session.service';
 import { MINUTOS_POR_TRECHO, queueByMateria } from '../../scheduler/queue';
 import { healthRanking, indexGaps, longDate, retention, weakGaps } from '../../stats/insights';
@@ -24,8 +26,10 @@ export class Home {
   private readonly fila = inject(ReviewQueueService);
   private readonly sessao = inject(ReviewSessionService);
   private readonly router = inject(Router);
+  private readonly auth = inject(AuthService);
 
   protected readonly data = computed(() => longDate(this.store.agora()));
+  protected readonly saudacao = computed(() => saudacao(this.auth.nome()));
 
   protected readonly total = computed(() => this.fila.fila().length);
   protected readonly titulo = computed(() =>

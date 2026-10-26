@@ -5,6 +5,7 @@ import {
   criarResumo,
   esperarSalvo,
   irPara,
+  NOME_DE_TESTE,
   novaConta,
   ocultarUltimasPalavras,
   reescrever,
@@ -153,4 +154,9 @@ test('editar trecho já revisado: pouco mantém o estado, muito volta para hoje'
     /^Trecho alterado em \d+%: estabilidade reduzida, volta para revisão hoje\.$/,
   );
   await expect(cabecalho).toContainText('próxima hoje');
+});
+
+test('criar conta com nome mostra a saudação no Início', async ({ page }) => {
+  await novaConta(page);
+  await expect(page.getByText(`Olá, ${NOME_DE_TESTE}`)).toBeVisible();
 });

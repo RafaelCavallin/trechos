@@ -16,6 +16,13 @@ h1 {
   font-size: 44px;
 }
 
+.saudacao {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--color-neutral-700);
+}
+
 .sub {
   margin: 0;
   font-size: 16px;

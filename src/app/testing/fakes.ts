@@ -9,6 +9,7 @@ export function fakeAuth(logado = true) {
   const user = signal(logado ? { id: 'u1' } : null);
   return {
     user,
+    nome: signal<string | null>(logado ? 'Ana' : null),
     session: signal(logado ? { user: { id: 'u1' } } : null),
     ready: Promise.resolve(),
     signIn: vi.fn().mockResolvedValue(undefined),

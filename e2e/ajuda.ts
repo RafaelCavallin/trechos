@@ -1,10 +1,13 @@
 import { Locator, Page, expect } from '@playwright/test';
 
+export const NOME_DE_TESTE = 'Ana Teste';
+
 /** Cria uma conta nova pela tela de entrar e espera chegar no Início. */
 export async function novaConta(page: Page): Promise<void> {
   const email = `e2e-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@teste.local`;
   await page.goto('/entrar');
   await page.getByRole('button', { name: 'Ainda não tenho conta' }).click();
+  await page.getByLabel('Nome').fill(NOME_DE_TESTE);
   await page.getByLabel('E-mail').fill(email);
   await page.getByLabel('Senha').fill('senha-de-teste');
   await page.getByRole('button', { name: 'Criar conta' }).click();

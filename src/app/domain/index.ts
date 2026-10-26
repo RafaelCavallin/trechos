@@ -6,3 +6,4 @@ export * from './review';
 export * from './change-ratio';
 export * from './health';
 export * from './settings';
+export * from './usuario';

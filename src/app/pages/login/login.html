@@ -8,6 +8,21 @@
     <h1>{{ modo() === 'entrar' ? 'Entrar' : 'Criar conta' }}</h1>
 
     <form (ngSubmit)="enviar()">
+      @if (modo() === 'criar') {
+        <div class="field">
+          <label for="nome">Nome</label>
+          <input
+            id="nome"
+            class="input"
+            type="text"
+            name="nome"
+            autocomplete="name"
+            required
+            [ngModel]="nome()"
+            (ngModelChange)="nome.set($event)"
+          />
+        </div>
+      }
       <div class="field">
         <label for="email">E-mail</label>
         <input

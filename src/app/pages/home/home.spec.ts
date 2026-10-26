@@ -20,7 +20,10 @@ const registro = (marcas: Record<string, boolean>, i: number): RegistroRevisao =
 });
 
 describe('Home', () => {
-  async function render(ajustar?: (r: ReturnType<typeof fakeStudyRepo>) => void) {
+  async function render(
+    ajustar?: (r: ReturnType<typeof fakeStudyRepo>) => void,
+    auth = fakeAuth(true),
+  ) {
     const repo = fakeStudyRepo();
     repo.listEstados.mockResolvedValue([]);
     ajustar?.(repo);
@@ -28,7 +31,7 @@ describe('Home', () => {
       providers: [
         provideRouter([{ path: '**', children: [] }]),
         { provide: StudyRepository, useValue: repo },
-        provideFakeAuth(fakeAuth(true)),
+        provideFakeAuth(auth),
       ],
     });
     const fixture = TestBed.createComponent(Home);
@@ -46,6 +49,18 @@ describe('Home', () => {
     expect(el.querySelector('.revisao .nome')?.textContent).toBe('Adm');
     expect(el.querySelector('.revisao .rotulo')?.textContent).toBe('3 trechos · ~6 min');
     expect(el.querySelector('.grande')?.textContent?.trim()).toBe('Iniciar sessão · ~6 min');
+  });
+
+  it('cumprimenta o usuário pelo nome do cadastro', async () => {
+    const { el } = await render();
+    expect(el.querySelector('.saudacao')?.textContent).toBe('Olá, Ana');
+  });
+
+  it('sem nome, cumprimenta sem nome', async () => {
+    const auth = fakeAuth(true);
+    auth.nome.set(null);
+    const { el } = await render(undefined, auth);
+    expect(el.querySelector('.saudacao')?.textContent).toBe('Olá');
   });
 
   it('iniciar abre a sessão e vai para a Revisão', async () => {

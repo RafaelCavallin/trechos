@@ -1,6 +1,15 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { Session } from '@supabase/supabase-js';
+import { CHAVE_NOME, nomeDoUsuario } from '../domain/usuario';
 import { SUPABASE } from './supabase';
+
+const NOME_OBRIGATORIO = 'Informe seu nome.';
+
+export interface Cadastro {
+  nome: string;
+  email: string;
+  senha: string;
+}
 
 /** Sessão do usuário (login por e-mail e senha no Supabase). */
 @Injectable({ providedIn: 'root' })
@@ -10,6 +19,7 @@ export class AuthService {
 
   readonly session = this._session.asReadonly();
   readonly user = computed(() => this._session()?.user ?? null);
+  readonly nome = computed(() => nomeDoUsuario(this.user()));
 
   /** Resolve quando a sessão salva no navegador já foi lida. */
   readonly ready: Promise<void>;
@@ -26,8 +36,13 @@ export class AuthService {
     if (error) throw new Error(mensagemDeErro(error.message));
   }
 
-  async signUp(email: string, senha: string): Promise<void> {
-    const { data, error } = await this.supabase.auth.signUp({ email, password: senha });
+  async signUp({ nome, email, senha }: Cadastro): Promise<void> {
+    if (!nome.trim()) throw new Error(NOME_OBRIGATORIO);
+    const { data, error } = await this.supabase.auth.signUp({
+      email,
+      password: senha,
+      options: { data: { [CHAVE_NOME]: nome.trim() } },
+    });
     if (error) throw new Error(mensagemDeErro(error.message));
     if (!data.session) throw new Error('Conta criada. Confirme o e-mail para entrar.');
   }

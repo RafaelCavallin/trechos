@@ -14,11 +14,13 @@ describe('Login', () => {
     const fixture = TestBed.createComponent(Login);
     await fixture.whenStable();
     const el = fixture.nativeElement as HTMLElement;
-    const preencher = async (email: string, senha: string) => {
-      for (const [sel, v] of [
+    const preencher = async (email: string, senha: string, nome?: string) => {
+      const campos = [
         ['#email', email],
         ['#senha', senha],
-      ]) {
+      ];
+      if (nome !== undefined) campos.push(['#nome', nome]);
+      for (const [sel, v] of campos) {
         const input = el.querySelector(sel) as HTMLInputElement;
         input.value = v;
         input.dispatchEvent(new Event('input'));
@@ -47,9 +49,21 @@ describe('Login', () => {
     await fixture.whenStable();
     expect(el.querySelector('h1')?.textContent).toContain('Criar conta');
     vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
-    await preencher('novo@exemplo.com', 'segredo1');
+    await preencher(' novo@exemplo.com ', 'segredo1', 'Ana');
     await enviar();
-    expect(auth.signUp).toHaveBeenCalledWith('novo@exemplo.com', 'segredo1');
+    expect(auth.signUp).toHaveBeenCalledWith({
+      nome: 'Ana',
+      email: 'novo@exemplo.com',
+      senha: 'segredo1',
+    });
+  });
+
+  it('o campo Nome só aparece ao criar conta', async () => {
+    const { el, fixture } = await render();
+    const antes = el.querySelector('#nome');
+    (el.querySelector('.alternar') as HTMLButtonElement).click();
+    await fixture.whenStable();
+    expect([antes, el.querySelector('label[for="nome"]')?.textContent]).toEqual([null, 'Nome']);
   });
 
   it('mostra o erro do login', async () => {

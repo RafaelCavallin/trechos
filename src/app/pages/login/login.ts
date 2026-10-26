@@ -16,6 +16,7 @@ export class Login {
   private readonly router = inject(Router);
 
   protected readonly modo = signal<'entrar' | 'criar'>('entrar');
+  protected readonly nome = signal('');
   protected readonly email = signal('');
   protected readonly senha = signal('');
   protected readonly erro = signal<string | null>(null);
@@ -31,14 +32,17 @@ export class Login {
     this.enviando.set(true);
     this.erro.set(null);
     try {
-      const email = this.email().trim();
-      if (this.modo() === 'entrar') await this.auth.signIn(email, this.senha());
-      else await this.auth.signUp(email, this.senha());
+      await this.autenticar(this.email().trim());
       await this.router.navigateByUrl('/');
     } catch (e) {
       this.erro.set(e instanceof Error ? e.message : 'Não foi possível entrar agora.');
     } finally {
       this.enviando.set(false);
     }
+  }
+
+  private async autenticar(email: string): Promise<void> {
+    if (this.modo() === 'entrar') return this.auth.signIn(email, this.senha());
+    return this.auth.signUp({ nome: this.nome(), email, senha: this.senha() });
   }
 }
