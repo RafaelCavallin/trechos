@@ -12,7 +12,7 @@ const CANDIDATA = /^(\p{L}{7,})([.,;:!?)]*)$/u;
 
 /**
  * Gera as lacunas dinâmicas do trecho (R10.3, design §3.3).
- * Nunca em títulos/subtítulos, negritos, lacunas manuais, anexos ou no cabeçalho
+ * Nunca em títulos/subtítulos, negritos, siglas, lacunas manuais, anexos ou no cabeçalho
  * de tabelas. É determinístico: o mesmo texto gera sempre as mesmas lacunas,
  * com ids `d:<bloco>:<caminho>:<segmento>:<palavra>`.
  */
@@ -28,7 +28,7 @@ export function generateDynamicGaps(
   const expandir = (segs: Segmento[], blocoId: string, caminho: string) => {
     const saida: (Segmento | SegmentoDinamico)[] = [];
     segs.forEach((seg, si) => {
-      if (seg.k !== 't' || seg.b) {
+      if (seg.k !== 't' || seg.b || seg.n) {
         saida.push(seg);
         return;
       }

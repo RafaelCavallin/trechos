@@ -1,7 +1,8 @@
 import { JSONContent } from '@tiptap/core';
 import { newId } from '../domain/ids';
-import { Bloco, BlocoAnexo, Segmento } from '../domain/types';
+import { Bloco, BlocoAnexo, Segmento, SegmentoTexto } from '../domain/types';
 import { FormaDoc } from './schema';
+import { MARCA_SIGLA } from './sigla-mark';
 
 /**
  * Conversão entre os blocos do Trechos (segmentos) e o documento do TipTap (JSON).
@@ -62,8 +63,24 @@ function paragraph(segs: readonly Segmento[]): JSONContent {
 function segToText(s: Segmento): JSONContent {
   if (s.k === 'g')
     return { type: 'text', text: s.t, marks: [{ type: 'gap', attrs: { id: s.id } }] };
-  if (s.b) return { type: 'text', text: s.t, marks: [{ type: 'bold' }] };
-  return { type: 'text', text: s.t };
+  const marks = marcasDoTexto(s);
+  return marks.length ? { type: 'text', text: s.t, marks } : { type: 'text', text: s.t };
+}
+
+type Marca = NonNullable<JSONContent['marks']>[number];
+
+function marcasDoTexto(s: SegmentoTexto): Marca[] {
+  const marks: Marca[] = s.b ? [{ type: 'bold' }] : [];
+  if (s.n) marks.push({ type: MARCA_SIGLA, attrs: { nota: s.n } });
+  return marks;
+}
+
+function segmentoDeTexto(node: JSONContent): SegmentoTexto {
+  const seg: SegmentoTexto = { k: 't', t: node.text ?? '' };
+  if (node.marks?.some((m) => m.type === 'bold')) seg.b = true;
+  const nota = node.marks?.find((m) => m.type === MARCA_SIGLA)?.attrs?.['nota'];
+  if (nota) seg.n = String(nota);
+  return seg;
 }
 
 // ── Documento → bloco ──────────────────────────────────────────────────────
@@ -104,7 +121,6 @@ export function inlineToSegs(
   for (const node of nodes ?? []) {
     if (node.type !== 'text' || !node.text) continue;
     const gap = node.marks?.find((m) => m.type === 'gap');
-    const bold = node.marks?.some((m) => m.type === 'bold') ?? false;
     const anterior = segs.at(-1);
     if (gap) {
       const idOriginal = String(gap.attrs?.['id'] ?? '');
@@ -119,10 +135,11 @@ export function inlineToSegs(
       continue;
     }
     ultimoGap = null;
-    if (anterior?.k === 't' && !!anterior.b === bold) {
+    const seg = segmentoDeTexto(node);
+    if (anterior?.k === 't' && !!anterior.b === !!seg.b && anterior.n === seg.n) {
       anterior.t += node.text;
     } else {
-      segs.push(bold ? { k: 't', t: node.text, b: true } : { k: 't', t: node.text });
+      segs.push(seg);
     }
   }
   return segs;

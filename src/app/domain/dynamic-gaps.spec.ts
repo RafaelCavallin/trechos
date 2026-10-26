@@ -83,6 +83,13 @@ describe('generateDynamicGaps', () => {
     expect(lacunas.map((d) => [d.id, d.t])).toEqual([['d:t:rows.1.0:0:0', 'Imperatividade']]);
   });
 
+  it('não oculta texto com significado (sigla) e o mantém com o significado', () => {
+    const sigla = { k: 't' as const, t: 'Constituição', n: 'Constituição Federal de 1988' };
+    const bloco: Bloco = { id: 'p', type: 'p', segs: [sigla, sigla, sigla] };
+    const [b] = generateDynamicGaps({ blocos: [bloco] }, 'densas', 'alta');
+    expect(b).toEqual(bloco);
+  });
+
   it('formatos sem lacunas dinâmicas devolvem os blocos como estão', () => {
     const [trecho] = splitTrechos(ATOS_ADMINISTRATIVOS);
     expect(generateDynamicGaps(trecho, 'titulo', 'alta')).toEqual(trecho.blocos);

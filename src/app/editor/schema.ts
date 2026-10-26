@@ -7,6 +7,7 @@ import { Table, TableCell, TableHeader, TableRow } from '@tiptap/extension-table
 import { Text } from '@tiptap/extension-text';
 import { Gapcursor, UndoRedo } from '@tiptap/extensions';
 import { GapMark } from './gap-mark';
+import { SiglaMark } from './sigla-mark';
 
 /**
  * Cada bloco tem o seu próprio editor, com o documento restrito ao formato do bloco:
@@ -16,7 +17,7 @@ import { GapMark } from './gap-mark';
  */
 export type FormaDoc = 'linha' | 'lista' | 'tabela';
 
-const comuns: Extensions = [Text, Paragraph, Bold, GapMark, UndoRedo];
+const comuns: Extensions = [Text, Paragraph, Bold, GapMark, SiglaMark, UndoRedo];
 
 export function extensionsFor(forma: FormaDoc): Extensions {
   switch (forma) {

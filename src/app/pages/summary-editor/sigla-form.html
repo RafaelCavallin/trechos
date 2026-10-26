@@ -1,0 +1,25 @@
+<form
+  class="form-sigla"
+  [attr.aria-label]="'Significado de “' + texto() + '”'"
+  (submit)="$event.preventDefault(); enviar()"
+  (keydown.escape)="cancelar.emit()"
+>
+  <label class="rotulo" for="campo-significado">
+    Significado de <strong>“{{ texto() }}”</strong>
+  </label>
+  <input
+    id="campo-significado"
+    class="input"
+    placeholder="Ex.: Supremo Tribunal Federal"
+    appAutofocus
+    [value]="nota()"
+    (input)="nota.set(valor($event))"
+  />
+  <div class="botoes">
+    <button type="button" class="btn btn-secondary" (click)="cancelar.emit()">Cancelar</button>
+    @if (inicial()) {
+      <button type="button" class="btn btn-secondary" (click)="salvar.emit('')">Remover</button>
+    }
+    <button type="submit" class="btn btn-primary" [disabled]="!nota().trim()">Salvar</button>
+  </div>
+</form>

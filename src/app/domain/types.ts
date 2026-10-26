@@ -29,11 +29,12 @@ export interface Resumo {
 /** Pedaço de texto rico dentro de um bloco. */
 export type Segmento = SegmentoTexto | SegmentoLacuna;
 
-/** Texto comum; `b` = negrito. */
+/** Texto comum; `b` = negrito; `n` = significado mostrado num popup (ex.: de uma sigla). */
 export interface SegmentoTexto {
   k: 't';
   t: string;
   b?: boolean;
+  n?: string;
 }
 
 /** Lacuna manual, com id estável que sobrevive a edições do texto ao redor. */

@@ -1,0 +1,22 @@
+<abbr
+  class="sigla"
+  tabindex="0"
+  cdkOverlayOrigin
+  #origem="cdkOverlayOrigin"
+  [class.negrito]="negrito()"
+  [attr.aria-describedby]="idNota"
+  >{{ texto() }}</abbr
+><span hidden [id]="idNota">{{ nota() }}</span>
+<ng-template
+  cdkConnectedOverlay
+  [cdkConnectedOverlayOrigin]="origem"
+  [cdkConnectedOverlayOpen]="aberta()"
+  [cdkConnectedOverlayPositions]="posicoes"
+  [cdkConnectedOverlayPush]="true"
+  [cdkConnectedOverlayViewportMargin]="margemTela"
+  (detach)="aberta.set(false)"
+>
+  <div class="sigla-nota" aria-hidden="true" [attr.data-sigla]="idNota" (mouseleave)="sair($event)">
+    {{ nota() }}
+  </div>
+</ng-template>

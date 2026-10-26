@@ -32,6 +32,7 @@
               "@fontsource/caprasimo/latin-400.css",
               "@fontsource/caprasimo/latin-ext-400.css",
               "@fontsource-variable/figtree/wght.css",
+              "@angular/cdk/overlay-prebuilt.css",
               "src/styles.css"
             ]
           },

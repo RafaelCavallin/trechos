@@ -27,6 +27,7 @@ import { lacunaParaDesocultar } from './gap-ranges';
 import { alternarLacuna } from './gap-toggle';
 import { dicaDoBloco } from './placeholder';
 import { extensionsFor } from './schema';
+import { AlvoSigla, FalhaSigla, ResultadoSigla, alvoDaSigla, marcarSigla } from './sigla-command';
 
 export type OndeFocar = 'inicio' | 'fim' | 'tudo';
 export type OperacaoTabela = 'linha+' | 'coluna+' | 'linha-' | 'coluna-';
@@ -240,6 +241,21 @@ export class BlockEditor {
 
   ocultar(): ResultadoOcultar {
     return this.editor ? alternarLacuna(this.editor) : { status: 'vazia' };
+  }
+
+  sigla(): AlvoSigla | FalhaSigla {
+    return this.editor ? alvoDaSigla(this.editor.state) : 'vazia';
+  }
+
+  marcarSigla(nota: string): ResultadoSigla {
+    if (!this.editor) return { status: 'vazia' };
+    const resultado = marcarSigla(this.editor, nota);
+    this.voltarFoco();
+    return resultado;
+  }
+
+  voltarFoco(): void {
+    this.editor?.commands.focus();
   }
 
   negrito(): boolean {

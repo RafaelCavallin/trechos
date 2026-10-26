@@ -1,7 +1,9 @@
 <ng-template #segmentos let-segs>
   @for (s of segs; track $index) {
     @if (s.k === 't') {
-      @if (s.b) {
+      @if (s.n) {
+        <app-sigla [texto]="s.t" [nota]="s.n" [negrito]="!!s.b" />
+      } @else if (s.b) {
         <strong>{{ s.t }}</strong>
       } @else {
         {{ s.t }}

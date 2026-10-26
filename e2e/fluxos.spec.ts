@@ -160,3 +160,29 @@ test('criar conta com nome mostra a saudação no Início', async ({ page }) => 
   await novaConta(page);
   await expect(page.getByText(`Olá, ${NOME_DE_TESTE}`)).toBeVisible();
 });
+
+test('explicar uma sigla no editor e ver o significado num popup na revisão', async ({ page }) => {
+  const sigla = page.locator('.ProseMirror abbr.sigla');
+  await novaConta(page);
+  await criarResumo(page, 'Tribunais');
+  await reescrever(page, blocoComTexto(page, 'Comece a escrever'), 'Decisão do STF sobre o tema.');
+  await page.keyboard.press('Home');
+  for (let i = 0; i < 'Decisão do '.length; i++) await page.keyboard.press('ArrowRight');
+  for (let i = 0; i < 'STF'.length; i++) await page.keyboard.press('Shift+ArrowRight');
+  await page.getByRole('toolbar').getByRole('button', { name: 'Sigla' }).click();
+  await page
+    .getByRole('textbox', { name: 'Significado de “STF”' })
+    .fill('Supremo Tribunal Federal');
+  await page.getByRole('button', { name: 'Salvar' }).click();
+  await expect(toast(page)).toHaveText('Significado salvo: “STF”');
+  await ocultarUltimasPalavras(page, 1);
+  await esperarSalvo(page);
+  await page.reload();
+  await expect(sigla).toHaveAttribute('title', 'Supremo Tribunal Federal');
+  await irPara(page, 'Revisão');
+  await page.getByRole('button', { name: 'Iniciar sessão' }).click();
+  await page.locator('abbr.sigla', { hasText: 'STF' }).hover();
+  await expect(page.locator('.sigla-nota')).toHaveText('Supremo Tribunal Federal');
+  await page.mouse.move(0, 0);
+  await expect(page.locator('.sigla-nota')).toBeHidden();
+});

@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, input, output } from '@angular/core
 import { BlocoRevisao, ID, Segmento, SegmentoDinamico } from '../../domain/types';
 import { Attachment } from '../attachment/attachment';
 import { ROTULO_ESPECIAL } from '../labels';
+import { Sigla } from '../sigla/sigla';
 
 /** Estados visuais de uma lacuna (design §5.3). */
 export type EstadoLacuna =
@@ -36,7 +37,7 @@ const PADRAO = (): VisualLacuna => ({ estado: 'editor' });
 /** Bloco do resumo só para leitura, com lacunas em qualquer estado (T4.1). */
 @Component({
   selector: 'app-block-view',
-  imports: [NgTemplateOutlet, Attachment],
+  imports: [NgTemplateOutlet, Attachment, Sigla],
   templateUrl: './block-view.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

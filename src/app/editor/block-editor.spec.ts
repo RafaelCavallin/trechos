@@ -135,6 +135,34 @@ describe('BlockEditor', () => {
     });
   });
 
+  describe('sigla', () => {
+    it('sem seleção, não há alvo nem mudança', async () => {
+      const { fixture, mudou } = await render(b2, 'fim');
+      const editor = fixture.componentInstance;
+      expect([editor.sigla(), editor.marcarSigla('x'), mudou]).toEqual([
+        'vazia',
+        { status: 'vazia' },
+        [],
+      ]);
+    });
+
+    it('com o texto selecionado, grava o significado, avisa a mudança e volta o foco', async () => {
+      const { fixture, pm, mudou } = await render(
+        { id: 'p', type: 'p', segs: [{ k: 't', t: 'STF' }] },
+        'tudo',
+      );
+      const foco = vi.spyOn(fixture.componentInstance, 'voltarFoco');
+      const resultado = fixture.componentInstance.marcarSigla('Supremo Tribunal Federal');
+      expect([resultado, foco.mock.calls.length]).toEqual([{ status: 'ok', texto: 'STF' }, 1]);
+      expect((mudou.at(-1) as BlocoTexto).segs).toEqual([
+        { k: 't', t: 'STF', n: 'Supremo Tribunal Federal' },
+      ]);
+      expect(pm.querySelector('abbr.sigla')?.getAttribute('title')).toBe(
+        'Supremo Tribunal Federal',
+      );
+    });
+  });
+
   it('foco "tudo" seleciona o texto (para digitar por cima)', async () => {
     const { fixture } = await render(
       { id: 'n', type: 'h2', segs: [{ k: 't', t: 'Novo trecho' }] },

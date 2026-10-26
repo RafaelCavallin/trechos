@@ -30,6 +30,21 @@ describe('BlockView', () => {
     expect(el.querySelector('p.bloco')?.textContent).toContain('Ato administrativo é a');
   });
 
+  it('texto com significado vira sigla com popup, mantendo o resto do texto', async () => {
+    const { el } = await render({
+      id: 'p',
+      type: 'p',
+      segs: [
+        { k: 't', t: 'Decisão do ' },
+        { k: 't', t: 'STF', n: 'Supremo Tribunal Federal', b: true },
+        { k: 't', t: '.' },
+      ],
+    });
+    const sigla = el.querySelector('abbr.sigla');
+    expect([sigla?.textContent, sigla?.classList.contains('negrito')]).toEqual(['STF', true]);
+    expect(el.querySelector('p.bloco strong')).toBeNull();
+  });
+
   it('lacunas ocultas mostram só o número', async () => {
     const { el } = await render(bloco('b2'), (s) => ({
       estado: 'oculta',

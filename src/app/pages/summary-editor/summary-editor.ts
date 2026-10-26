@@ -13,6 +13,7 @@ import { RouterLink } from '@angular/router';
 import {
   LucideEye,
   LucideEyeOff,
+  LucideBookA,
   LucideImage,
   LucidePaperclip,
   LucidePencil,
@@ -47,10 +48,12 @@ import {
 import { BlockEditor, OndeFocar, OperacaoTabela } from '../../editor/block-editor';
 import { BlocoDeTexto } from '../../editor/doc-conversion';
 import { mensagemDoResultado } from '../../editor/gap-toggle';
+import { AlvoSigla, MENSAGEM_SIGLA, mensagemDaSigla } from '../../editor/sigla-command';
 import { aplicarEdicao, herdarEstado } from '../../scheduler/fsrs';
 import { Attachment } from '../../shared/attachment/attachment';
 import { buildEditorView } from './editor-view';
 import { QuestionForm, RascunhoPergunta } from './question-form';
+import { SiglaForm } from './sigla-form';
 
 /** Espera depois da última alteração antes de gravar no banco. */
 export const ATRASO_SALVAR_MS = 700;
@@ -65,8 +68,10 @@ type Salvamento = 'salvo' | 'pendente' | 'salvando' | 'erro';
     BlockEditor,
     Attachment,
     QuestionForm,
+    SiglaForm,
     LucideEye,
     LucideEyeOff,
+    LucideBookA,
     LucideImage,
     LucidePaperclip,
     LucidePencil,
@@ -118,6 +123,7 @@ export class SummaryEditor {
   protected readonly perguntaEm = signal<ID | null>(null);
   protected readonly perguntaEditada = signal<ID | null>(null);
   protected readonly salvamento = signal<Salvamento>('salvo');
+  protected readonly sigla = signal<AlvoSigla | null>(null);
 
   /** Último bloco de texto que teve foco: alvo de Ocultar e Negrito. */
   private ultimoEditor: ID | null = null;
@@ -190,6 +196,23 @@ export class SummaryEditor {
 
   protected aoMoverCursor(blocoId: ID, naLacuna: boolean): void {
     if (blocoId === this.ultimoEditor) this.cursorNaLacuna.set(naLacuna);
+  }
+
+  protected abrirSigla(): void {
+    const alvo = this.editorAtivo()?.sigla() ?? 'vazia';
+    if (typeof alvo === 'string') this.toast.show(MENSAGEM_SIGLA[alvo]);
+    else this.sigla.set(alvo);
+  }
+
+  protected salvarSigla(nota: string): void {
+    this.sigla.set(null);
+    const resultado = this.editorAtivo()?.marcarSigla(nota) ?? { status: 'vazia' as const };
+    this.toast.show(mensagemDaSigla(resultado));
+  }
+
+  protected cancelarSigla(): void {
+    this.sigla.set(null);
+    this.editorAtivo()?.voltarFoco();
   }
 
   protected negrito(): void {

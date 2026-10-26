@@ -79,6 +79,15 @@
         Ocultar
       }
     </button>
+    <button
+      class="btn"
+      type="button"
+      title="Explica a sigla ou o termo selecionado: o significado aparece num popup"
+      (click)="abrirSigla()"
+    >
+      <svg lucideBookA [size]="16" aria-hidden="true"></svg>
+      Sigla
+    </button>
     <span class="separador"></span>
     <button class="btn especial" data-kind="pegadinha" type="button" (click)="inserir('pegadinha')">
       Pegadinha
@@ -102,6 +111,15 @@
     <input #campoImagem type="file" accept="image/*" hidden (change)="anexar('image', $event)" />
     <input #campoArquivo type="file" hidden (change)="anexar('file', $event)" />
   </div>
+
+  @if (sigla(); as alvo) {
+    <app-sigla-form
+      [texto]="alvo.texto"
+      [inicial]="alvo.nota"
+      (salvar)="salvarSigla($event)"
+      (cancelar)="cancelarSigla()"
+    />
+  }
 
   <p class="dica">
     Selecione uma expressão no texto — inclusive dentro de células de tabela — e clique em

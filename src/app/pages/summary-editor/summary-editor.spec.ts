@@ -124,6 +124,70 @@ describe('SummaryEditor', () => {
     });
   });
 
+  describe('Sigla', () => {
+    const ALVO = { from: 1, to: 4, texto: 'Ato', nota: '' };
+
+    async function comBlocoFocado() {
+      const tela = await render();
+      const [, bloco] = tela.fixture.debugElement.queryAll(By.directive(BlockEditor));
+      bloco.triggerEventHandler('focou');
+      await tela.estavel();
+      const editor = bloco.componentInstance as BlockEditor;
+      const formulario = () => tela.el.querySelector('app-sigla-form');
+      const mensagem = () => TestBed.inject(ToastService).message();
+      return { ...tela, editor, formulario, mensagem };
+    }
+
+    it('sem seleção, avisa e não abre o formulário', async () => {
+      const { botao, clicar, el } = await render();
+      await clicar(botao('Sigla'));
+      expect([el.querySelector('app-sigla-form'), TestBed.inject(ToastService).message()]).toEqual([
+        null,
+        'Selecione um texto, como uma sigla, para explicar o que ele significa.',
+      ]);
+    });
+
+    it('com texto selecionado, abre o formulário com o texto e o significado atual', async () => {
+      const { editor, botao, clicar, formulario } = await comBlocoFocado();
+      vi.spyOn(editor, 'sigla').mockReturnValue({ ...ALVO, nota: 'Ato da Administração' });
+      await clicar(botao('Sigla'));
+      expect(formulario()?.querySelector('label')?.textContent?.trim()).toBe(
+        'Significado de “Ato”',
+      );
+      expect(formulario()?.querySelector('input')?.value).toBe('Ato da Administração');
+    });
+
+    it('salvar grava o significado no bloco, fecha o formulário e avisa', async () => {
+      const { editor, botao, clicar, el, estavel, formulario, mensagem } = await comBlocoFocado();
+      vi.spyOn(editor, 'sigla').mockReturnValue(ALVO);
+      const marcar = vi
+        .spyOn(editor, 'marcarSigla')
+        .mockReturnValue({ status: 'ok', texto: 'Ato' });
+      await clicar(botao('Sigla'));
+      const campo = el.querySelector<HTMLInputElement>('app-sigla-form input')!;
+      campo.value = 'Ato administrativo';
+      campo.dispatchEvent(new Event('input'));
+      await estavel();
+      await clicar(botao('Salvar'));
+      expect(marcar).toHaveBeenCalledWith('Ato administrativo');
+      expect([formulario(), mensagem()]).toEqual([null, 'Significado salvo: “Ato”']);
+    });
+
+    it('cancelar fecha o formulário e devolve o foco ao bloco sem mudar nada', async () => {
+      const { editor, botao, clicar, formulario } = await comBlocoFocado();
+      vi.spyOn(editor, 'sigla').mockReturnValue(ALVO);
+      const marcar = vi.spyOn(editor, 'marcarSigla');
+      const foco = vi.spyOn(editor, 'voltarFoco');
+      await clicar(botao('Sigla'));
+      await clicar(botao('Cancelar'));
+      expect([formulario(), marcar.mock.calls.length, foco.mock.calls.length]).toEqual([
+        null,
+        0,
+        1,
+      ]);
+    });
+  });
+
   it('inserir bloco: entra depois do selecionado e é salvo depois de uma pausa', async () => {
     const { el, botao, clicar, blocos } = await render();
     await clicar(el.querySelectorAll('.area-bloco')[1]);

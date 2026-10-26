@@ -2,17 +2,18 @@ import { Editor, Mark, mergeAttributes } from '@tiptap/core';
 import { TextSelection } from '@tiptap/pm/state';
 import { newId } from '../domain/ids';
 import { IntervaloLacuna, MARCA_LACUNA, aparar, lacunasSobrepostas } from './gap-ranges';
+import { MARCA_SIGLA } from './sigla-mark';
 
 /**
  * Lacuna manual: marca de texto com id estável (R3.5).
- * - Não convive com negrito (a lacuna vence).
+ * - Não convive com negrito nem com sigla (a lacuna vence).
  * - Digitar na borda não estende a lacuna.
  * - Ao colar HTML, ganha id novo (evita duas lacunas com o mesmo id).
  */
 export const GapMark = Mark.create({
   name: MARCA_LACUNA,
   inclusive: false,
-  excludes: 'bold',
+  excludes: `bold ${MARCA_SIGLA}`,
 
   addAttributes() {
     return {
@@ -63,6 +64,7 @@ function marcarLacuna(editor: Editor, lacuna: IntervaloLacuna, antiga?: Interval
   const gap = schema.marks[MARCA_LACUNA];
   if (antiga) tr.removeMark(antiga.from, antiga.to, gap);
   tr.removeMark(lacuna.from, lacuna.to, schema.marks['bold']);
+  tr.removeMark(lacuna.from, lacuna.to, schema.marks[MARCA_SIGLA]);
   tr.addMark(lacuna.from, lacuna.to, gap.create({ id: lacuna.id }));
   tr.setSelection(TextSelection.create(tr.doc, lacuna.to));
   editor.view.dispatch(tr);
