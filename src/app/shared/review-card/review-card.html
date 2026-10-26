@@ -1,0 +1,90 @@
+@let sessao = cartao.sessao();
+@let atual = cartao.atual();
+@if (sessao && atual) {
+  <div class="sessao">
+    <article class="card elev-sm cartao">
+      <div class="etiquetas">
+        <span class="tag tag-accent-2 forte">{{ atual.materia }}</span>
+        <span class="tag tag-neutral">
+          {{ semItens() ? 'Sem itens' : textoModo[atual.modo] }}
+        </span>
+      </div>
+
+      @if (!atual.trecho) {
+        <h2>Trecho não encontrado</h2>
+        <p class="fraco">Ele foi alterado ou excluído depois que a sessão começou.</p>
+        <button type="button" class="btn btn-primary grande" (click)="cartao.proximo()">
+          Próximo trecho
+        </button>
+      } @else if (semItens()) {
+        <h2>{{ atual.trecho.titulo }}</h2>
+        <p class="fraco instrucao">
+          Este trecho não tem itens verificáveis e não entra na revisão. Oculte uma expressão ou
+          adicione uma pergunta na margem.
+        </p>
+        <div class="blocos">
+          @for (b of partes().corpo; track b.id) {
+            <app-block-view [bloco]="b" />
+          }
+        </div>
+        <button type="button" class="btn btn-primary grande" (click)="cartao.proximo()">
+          Próximo trecho
+        </button>
+      } @else {
+        @if (partes().titulo && atual.modo !== 'perguntas') {
+          <div class="titulo-cartao">
+            <app-block-view
+              [bloco]="partes().titulo!"
+              [lacuna]="cartao.visual()"
+              (lacunaClicada)="cartao.clicarLacuna($event)"
+            />
+          </div>
+        } @else {
+          <h2>{{ atual.trecho.titulo }}</h2>
+        }
+        <p class="fraco instrucao">{{ instrucao() }}</p>
+
+        @if (atual.modo === 'titulo') {
+          @if (!sessao.revelado) {
+            <textarea
+              class="input recall"
+              aria-label="O que você lembra"
+              placeholder="Escreva livremente o que você lembra deste trecho…"
+              [value]="sessao.recall"
+              (input)="controle.setRecall($any($event.target).value)"
+            ></textarea>
+          } @else if (sessao.recall.trim()) {
+            <div class="escrito">
+              <span class="rotulo">O que você escreveu</span>
+              <span class="texto">{{ sessao.recall }}</span>
+            </div>
+          }
+        }
+
+        @if (mostrarBlocos()) {
+          <div class="blocos">
+            @for (b of partes().corpo; track b.id) {
+              <app-block-view
+                [bloco]="b"
+                [lacuna]="cartao.visual()"
+                (lacunaClicada)="cartao.clicarLacuna($event)"
+              />
+            }
+          </div>
+        }
+
+        @if (atual.modo === 'perguntas') {
+          <app-question-list />
+        }
+
+        <app-grade-actions [rotuloFim]="rotuloFim()" />
+        <p class="atalhos">
+          Atalhos: Espaço revela · 1 ou ← acertou · 2 ou → errou · ↑ ↓ mudam o item · Enter calcula
+          a nota e avança
+        </p>
+      }
+    </article>
+
+    <app-items-panel />
+  </div>
+}

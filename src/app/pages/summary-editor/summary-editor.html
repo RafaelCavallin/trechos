@@ -24,6 +24,15 @@
           }
         }
       </span>
+      <a
+        class="btn btn-secondary"
+        title="Simula a revisão deste resumo, sem gravar nada"
+        [routerLink]="['/resumos', r.id, 'preview']"
+        [queryParams]="{ trecho: trechoSelecionado() }"
+      >
+        <svg lucidePlay [size]="15" aria-hidden="true"></svg>
+        Preview
+      </a>
       <span class="tag tag-accent-2 forte">{{ visao().totais.trechos }}</span>
       <span class="tag tag-accent forte">{{ visao().totais.itens }}</span>
       @if (visao().totais.avisos; as avisos) {

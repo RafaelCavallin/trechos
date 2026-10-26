@@ -186,3 +186,31 @@ test('explicar uma sigla no editor e ver o significado num popup na revisão', a
   await page.mouse.move(0, 0);
   await expect(page.locator('.sigla-nota')).toBeHidden();
 });
+
+test('preview simula a revisão do resumo sem gravar nada', async ({ page }) => {
+  await novaConta(page);
+  await criarResumo(page, 'Capitais do Brasil');
+  await reescrever(
+    page,
+    blocoComTexto(page, 'Comece a escrever'),
+    'A capital do Brasil é Brasília.',
+  );
+  await ocultarUltimasPalavras(page, 1);
+  await esperarSalvo(page);
+  await page.getByRole('link', { name: 'Preview' }).click();
+  await expect(page.getByText('Simulação: nada é gravado.')).toBeVisible();
+  await expect(page.getByText('Trecho 1 de 1')).toBeVisible();
+  await expect(page.getByLabel('Lacuna 1')).toBeVisible();
+  await page.getByRole('button', { name: 'Revelar' }).click();
+  await expect(page.locator('.cartao').getByText('Brasília')).toBeVisible();
+  await page.getByRole('button', { name: 'Marcar restantes como acerto' }).click();
+  await page.getByRole('button', { name: 'Calcular nota' }).click();
+  await expect(page.locator('.resultado')).toContainText('100%');
+  await page.getByRole('button', { name: 'Concluir preview' }).click();
+  await expect(page.getByRole('heading', { name: 'Fim do preview' })).toBeVisible();
+  const caminho = page.getByRole('navigation', { name: 'Caminho' });
+  await caminho.getByRole('link', { name: 'Voltar ao editor' }).click();
+  await expect(page.getByText(/Nova · 1ª revisão hoje/).first()).toBeVisible();
+  const nav = page.getByRole('navigation', { name: 'Principal' });
+  await expect(nav.getByRole('link', { name: /Revisão\s*1 trechos na fila/ })).toBeVisible();
+});

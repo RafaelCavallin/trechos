@@ -1,0 +1,57 @@
+@let sessao = cartao.sessao();
+@let itens = cartao.atual()?.itens ?? [];
+@if (sessao) {
+  <aside class="card painel" aria-label="Itens verificáveis">
+    <div class="painel-topo">
+      <span class="card-kicker">Itens verificáveis</span>
+      <span class="fraco">{{ cartao.marcados() }}/{{ itens.length }}</span>
+    </div>
+    @for (item of itens; track item.id; let i = $index) {
+      @let m = sessao.marcas[item.id];
+      <div
+        class="item"
+        [attr.data-marca]="cartao.marca(item.id)"
+        [class.focado]="cartao.marcando() && cartao.foco() === i"
+      >
+        <span class="num">{{ item.num }}</span>
+        <span class="rotulo-item" [class.apagado]="!sessao.revelado && item.tipo !== 'pergunta'">
+          @if (item.tipo === 'pergunta') {
+            {{ item.pergunta }}
+          } @else if (sessao.revelado) {
+            {{ item.texto }}
+          } @else {
+            {{ item.tipo === 'dinamica' ? 'Lacuna dinâmica' : 'Lacuna' }}
+          }
+        </span>
+        @if (item.tipo === 'dinamica') {
+          <span class="tag tag-accent-2 mini">dinâmica</span>
+        }
+        <button
+          type="button"
+          class="btn btn-icon marca ok"
+          [class.ativo]="m === true"
+          [attr.aria-pressed]="m === true"
+          [attr.aria-label]="'Acertei o item ' + item.num"
+          title="Acertei"
+          [disabled]="!cartao.marcando()"
+          (click)="cartao.marcar(i, true)"
+        >
+          <svg lucideCheck [size]="16" aria-hidden="true"></svg>
+        </button>
+        <button
+          type="button"
+          class="btn btn-icon marca erro"
+          [class.ativo]="m === false"
+          [attr.aria-pressed]="m === false"
+          [attr.aria-label]="'Errei o item ' + item.num"
+          title="Errei"
+          [disabled]="!cartao.marcando()"
+          (click)="cartao.marcar(i, false)"
+        >
+          <svg lucideX [size]="16" aria-hidden="true"></svg>
+        </button>
+      </div>
+    }
+    <p class="faixas">{{ faixas() }}</p>
+  </aside>
+}

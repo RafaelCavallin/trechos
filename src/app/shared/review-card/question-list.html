@@ -1,0 +1,27 @@
+@let sessao = cartao.sessao();
+@if (sessao) {
+  <ol class="perguntas">
+    @for (item of cartao.atual()?.itens ?? []; track item.id; let i = $index) {
+      @if (item.tipo === 'pergunta') {
+        <li class="pergunta" [class.focado]="cartao.marcando() && cartao.foco() === i">
+          <span class="num-pergunta">{{ item.num }}</span>
+          <div class="pergunta-corpo">
+            <span class="q">{{ item.pergunta }}</span>
+            @if (sessao.revelado) {
+              <button
+                type="button"
+                class="resposta"
+                [attr.data-marca]="cartao.marca(item.id)"
+                [disabled]="!!sessao.resultado"
+                title="Clique para marcar acerto ou erro"
+                (click)="cartao.clicarLacuna(item.id)"
+              >
+                {{ item.resposta || '(sem resposta registrada)' }}
+              </button>
+            }
+          </div>
+        </li>
+      }
+    }
+  </ol>
+}

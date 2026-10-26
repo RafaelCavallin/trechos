@@ -1,0 +1,87 @@
+@if (resumo(); as r) {
+  <nav class="caminho" aria-label="Caminho">
+    <a class="btn btn-ghost" [routerLink]="['/resumos', r.id]">
+      <svg lucideArrowLeft [size]="16" aria-hidden="true"></svg>
+      Voltar ao editor
+    </a>
+  </nav>
+
+  <header class="abertura">
+    <div class="kicker">Preview da revisão</div>
+    <h1>{{ r.titulo }}</h1>
+    <p class="fraco">Simulação: nada é gravado.</p>
+  </header>
+
+  @if (s(); as sessao) {
+    @if (sessao.concluida) {
+      <section class="card fim" aria-labelledby="t-fim">
+        <h2 id="t-fim">Fim do preview</h2>
+        <p class="fraco">Você passou por todos os trechos deste resumo.</p>
+        <div class="botoes">
+          <button type="button" class="btn btn-primary" (click)="servico.recomecar()">
+            Recomeçar
+          </button>
+          <a class="btn btn-secondary" [routerLink]="['/resumos', r.id]">Voltar ao editor</a>
+        </div>
+      </section>
+    } @else {
+      <div class="controles">
+        <div class="navegacao">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            aria-label="Trecho anterior"
+            [disabled]="sessao.indice === 0"
+            (click)="servico.irPara(sessao.indice - 1)"
+          >
+            <svg lucideChevronLeft [size]="16" aria-hidden="true"></svg>
+            Anterior
+          </button>
+          <span class="forte" aria-live="polite">
+            Trecho {{ sessao.indice + 1 }} de {{ sessao.fila.length }}
+          </span>
+          <button
+            type="button"
+            class="btn btn-secondary"
+            aria-label="Trecho seguinte"
+            [disabled]="sessao.indice + 1 >= sessao.fila.length"
+            (click)="servico.irPara(sessao.indice + 1)"
+          >
+            Seguinte
+            <svg lucideChevronRight [size]="16" aria-hidden="true"></svg>
+          </button>
+        </div>
+        <div class="seg" role="radiogroup" aria-label="Formato da revisão">
+          @for (f of formatos; track f.valor) {
+            <label class="seg-opt">
+              <input
+                type="radio"
+                name="formato"
+                [checked]="servico.formato() === f.valor"
+                (change)="servico.escolherFormato(f.valor)"
+              />
+              {{ f.rotulo }}
+            </label>
+          }
+        </div>
+      </div>
+      <app-review-card rotuloFim="Concluir preview" />
+    }
+  } @else {
+    <section class="card vazio">
+      <p>
+        Este resumo ainda está vazio. Escreva um título e oculte uma expressão para criar o primeiro
+        trecho.
+      </p>
+      <a class="btn btn-secondary" [routerLink]="['/resumos', r.id]">Voltar ao editor</a>
+    </section>
+  }
+} @else if (store.status() === 'pronto') {
+  <div class="card vazio">
+    <p class="card-title">Resumo não encontrado.</p>
+    <p>Ele pode ter sido excluído.</p>
+    <a class="btn btn-secondary" routerLink="/materias">Voltar para Matérias</a>
+  </div>
+} @else {
+  <p class="text-muted">Carregando…</p>
+}

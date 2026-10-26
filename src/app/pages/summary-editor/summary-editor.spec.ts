@@ -67,6 +67,22 @@ describe('SummaryEditor', () => {
     ]);
   });
 
+  describe('botão Preview', () => {
+    const preview = (el: HTMLElement) =>
+      [...el.querySelectorAll('a')].find((a) => a.textContent?.trim() === 'Preview')!;
+
+    it('sem bloco selecionado, abre o preview do resumo desde o começo', async () => {
+      const { el } = await render();
+      expect(preview(el).getAttribute('href')).toBe('/resumos/r1/preview');
+    });
+
+    it('com um bloco selecionado, abre no trecho desse bloco', async () => {
+      const { el, clicar } = await render();
+      await clicar(el.querySelectorAll('.area-bloco')[5]);
+      expect(preview(el).getAttribute('href')).toBe('/resumos/r1/preview?trecho=b5');
+    });
+  });
+
   it('Ocultar e Negrito sem seleção avisam', async () => {
     const { botao, clicar } = await render();
     await clicar(botao('Ocultar'));

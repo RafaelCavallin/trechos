@@ -1,0 +1,36 @@
+@let sessao = cartao.sessao();
+@if (sessao && !sessao.revelado) {
+  <button type="button" class="btn btn-primary grande" (click)="cartao.revelar()">
+    <svg lucideEye [size]="17" aria-hidden="true"></svg>
+    Revelar
+  </button>
+} @else if (sessao && !sessao.resultado) {
+  <div class="acoes-nota">
+    <button
+      type="button"
+      class="btn btn-primary grande"
+      [disabled]="!controle.todosMarcados()"
+      (click)="controle.calcularNota()"
+    >
+      Calcular nota
+    </button>
+    <span class="fraco">
+      {{ cartao.marcados() }} de {{ cartao.atual()?.itens?.length ?? 0 }} itens marcados
+    </span>
+    <button type="button" class="btn btn-ghost" (click)="controle.marcarRestantes()">
+      Marcar restantes como acerto
+    </button>
+  </div>
+} @else if (sessao?.resultado; as res) {
+  <div class="resultado" [attr.data-nota]="corNota(res.nota)" role="status">
+    <div class="pct">{{ res.pct }}%</div>
+    <div class="res-texto">
+      <div class="nota">{{ textoNota[res.nota] }}</div>
+      <div>{{ res.acertos }} de {{ res.total }} itens · nota FSRS: {{ res.nota }}</div>
+      <div class="forte">{{ proximaRevisao() }}</div>
+    </div>
+    <button type="button" class="btn btn-primary grande" (click)="cartao.proximo()">
+      {{ rotuloAvancar() }}
+    </button>
+  </div>
+}

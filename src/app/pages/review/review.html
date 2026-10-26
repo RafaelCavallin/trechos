@@ -6,13 +6,12 @@
       (estatisticas)="verEstatisticas()"
     />
   } @else if (a(); as atual) {
-    <!-- Sessão em andamento -->
     <h1 class="sr-only">Sessão de revisão</h1>
     <div class="barra-sessao">
       <button type="button" class="btn btn-secondary" (click)="servico.sair()">Sair</button>
       <div class="progresso">
         <div class="progresso-texto">
-          <span class="forte">Trecho {{ s()!.indice + 1 }} de {{ s()!.fila.length }}</span>
+          <span class="forte">Trecho {{ sessao.indice + 1 }} de {{ sessao.fila.length }}</span>
           <span class="fraco">{{ atual.materia }} · {{ atual.assunto }}</span>
         </div>
         <div
@@ -28,201 +27,9 @@
       </div>
     </div>
 
-    <div class="sessao">
-      <article class="card elev-sm cartao">
-        <div class="etiquetas">
-          <span class="tag tag-accent-2 forte">{{ atual.materia }}</span>
-          <span class="tag tag-neutral">{{ textoModo[atual.modo] }}</span>
-        </div>
-
-        @if (!atual.trecho) {
-          <h2>Trecho não encontrado</h2>
-          <p class="fraco">Ele foi alterado ou excluído depois que a sessão começou.</p>
-          <button type="button" class="btn btn-primary grande" (click)="proximo()">
-            Próximo trecho
-          </button>
-        } @else {
-          @if (partes().titulo && atual.modo !== 'perguntas') {
-            <div class="titulo-cartao">
-              <app-block-view
-                [bloco]="partes().titulo!"
-                [lacuna]="visual()"
-                (lacunaClicada)="clicarLacuna($event)"
-              />
-            </div>
-          } @else {
-            <h2>{{ atual.trecho.titulo }}</h2>
-          }
-          <p class="fraco instrucao">{{ instrucao() }}</p>
-
-          @if (atual.modo === 'titulo') {
-            @if (!sessao.revelado) {
-              <textarea
-                class="input recall"
-                aria-label="O que você lembra"
-                placeholder="Escreva livremente o que você lembra deste trecho…"
-                [value]="sessao.recall"
-                (input)="servico.setRecall($any($event.target).value)"
-              ></textarea>
-            } @else if (sessao.recall.trim()) {
-              <div class="escrito">
-                <span class="rotulo">O que você escreveu</span>
-                <span class="texto">{{ sessao.recall }}</span>
-              </div>
-            }
-          }
-
-          @if (mostrarBlocos()) {
-            <div class="blocos">
-              @for (b of partes().corpo; track b.id) {
-                <app-block-view
-                  [bloco]="b"
-                  [lacuna]="visual()"
-                  (lacunaClicada)="clicarLacuna($event)"
-                />
-              }
-            </div>
-          }
-
-          @if (atual.modo === 'perguntas') {
-            <ol class="perguntas">
-              @for (item of atual.itens; track item.id; let i = $index) {
-                @if (item.tipo === 'pergunta') {
-                  <li
-                    class="pergunta"
-                    [class.focado]="sessao.revelado && !sessao.resultado && foco() === i"
-                  >
-                    <span class="num-pergunta">{{ item.num }}</span>
-                    <div class="pergunta-corpo">
-                      <span class="q">{{ item.pergunta }}</span>
-                      @if (sessao.revelado) {
-                        <button
-                          type="button"
-                          class="resposta"
-                          [attr.data-marca]="
-                            sessao.marcas[item.id] === true
-                              ? 'acertou'
-                              : sessao.marcas[item.id] === false
-                                ? 'errou'
-                                : null
-                          "
-                          [disabled]="!!sessao.resultado"
-                          title="Clique para marcar acerto ou erro"
-                          (click)="clicarLacuna(item.id)"
-                        >
-                          {{ item.resposta || '(sem resposta registrada)' }}
-                        </button>
-                      }
-                    </div>
-                  </li>
-                }
-              }
-            </ol>
-          }
-
-          @if (!sessao.revelado) {
-            <button type="button" class="btn btn-primary grande" (click)="revelar()">
-              <svg lucideEye [size]="17" aria-hidden="true"></svg>
-              Revelar
-            </button>
-          } @else if (!sessao.resultado) {
-            <div class="acoes-nota">
-              <button
-                type="button"
-                class="btn btn-primary grande"
-                [disabled]="!servico.todosMarcados()"
-                (click)="servico.calcularNota()"
-              >
-                Calcular nota
-              </button>
-              <span class="fraco">{{ marcados() }} de {{ atual.itens.length }} itens marcados</span>
-              <button type="button" class="btn btn-ghost" (click)="servico.marcarRestantes()">
-                Marcar restantes como acerto
-              </button>
-            </div>
-          } @else {
-            @let res = sessao.resultado;
-            <div class="resultado" [attr.data-nota]="corNota(res.nota)" role="status">
-              <div class="pct">{{ res.pct }}%</div>
-              <div class="res-texto">
-                <div class="nota">{{ textoNota[res.nota] }}</div>
-                <div>{{ res.acertos }} de {{ res.total }} itens · nota FSRS: {{ res.nota }}</div>
-                <div class="forte">{{ proximaRevisao() }}</div>
-              </div>
-              <button type="button" class="btn btn-primary grande" (click)="proximo()">
-                {{
-                  sessao.indice + 1 < sessao.fila.length ? 'Próximo trecho' : 'Ver resumo da sessão'
-                }}
-              </button>
-            </div>
-          }
-          <p class="atalhos">
-            Atalhos: Espaço revela · 1 ou ← acertou · 2 ou → errou · ↑ ↓ mudam o item · Enter
-            calcula a nota e avança
-          </p>
-        }
-      </article>
-
-      <aside class="card painel" aria-label="Itens verificáveis">
-        <div class="painel-topo">
-          <span class="card-kicker">Itens verificáveis</span>
-          <span class="fraco">{{ marcados() }}/{{ atual.itens.length }}</span>
-        </div>
-        @for (item of atual.itens; track item.id; let i = $index) {
-          @let m = sessao.marcas[item.id];
-          <div
-            class="item"
-            [attr.data-marca]="m === true ? 'acertou' : m === false ? 'errou' : null"
-            [class.focado]="sessao.revelado && !sessao.resultado && foco() === i"
-          >
-            <span class="num">{{ item.num }}</span>
-            <span
-              class="rotulo-item"
-              [class.apagado]="!sessao.revelado && item.tipo !== 'pergunta'"
-            >
-              @if (item.tipo === 'pergunta') {
-                {{ item.pergunta }}
-              } @else if (sessao.revelado) {
-                {{ item.texto }}
-              } @else {
-                {{ item.tipo === 'dinamica' ? 'Lacuna dinâmica' : 'Lacuna' }}
-              }
-            </span>
-            @if (item.tipo === 'dinamica') {
-              <span class="tag tag-accent-2 mini">dinâmica</span>
-            }
-            <button
-              type="button"
-              class="btn btn-icon marca ok"
-              [class.ativo]="m === true"
-              [attr.aria-pressed]="m === true"
-              [attr.aria-label]="'Acertei o item ' + item.num"
-              title="Acertei"
-              [disabled]="!sessao.revelado || !!sessao.resultado"
-              (click)="marcar(i, true)"
-            >
-              <svg lucideCheck [size]="16" aria-hidden="true"></svg>
-            </button>
-            <button
-              type="button"
-              class="btn btn-icon marca erro"
-              [class.ativo]="m === false"
-              [attr.aria-pressed]="m === false"
-              [attr.aria-label]="'Errei o item ' + item.num"
-              title="Errei"
-              [disabled]="!sessao.revelado || !!sessao.resultado"
-              (click)="marcar(i, false)"
-            >
-              <svg lucideX [size]="16" aria-hidden="true"></svg>
-            </button>
-          </div>
-        }
-        <p class="faixas">{{ faixasTexto() }}</p>
-      </aside>
-    </div>
+    <app-review-card />
   }
 } @else if (lista().length) {
-  <!-- Fila do dia -->
   <section class="inicio">
     <div class="abertura">
       <div class="kicker">Sessão diária intercalada</div>

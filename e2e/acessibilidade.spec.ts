@@ -46,6 +46,16 @@ test('todas as telas passam no axe', async ({ page }) => {
   await semViolacoes(page, 'Configurações');
 });
 
+test('o preview do resumo passa no axe', async ({ page }) => {
+  await contaComExemplos(page);
+  await page.getByRole('link', { name: 'Atos administrativos' }).click();
+  await page.getByRole('link', { name: 'Preview' }).click();
+  await expect(page.getByText('Simulação: nada é gravado.')).toBeVisible();
+  await semViolacoes(page, 'Preview');
+  await page.getByRole('button', { name: 'Revelar' }).click();
+  await semViolacoes(page, 'Preview revelado');
+});
+
 test('sessão de revisão só com o teclado', async ({ page }) => {
   await contaComExemplos(page);
   await irPara(page, 'Revisão');

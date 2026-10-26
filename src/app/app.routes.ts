@@ -33,6 +33,12 @@ export const routes: Routes = [
           import('./pages/summary-editor/summary-editor').then((m) => m.SummaryEditor),
       },
       {
+        path: 'resumos/:id/preview',
+        title: 'Preview · Trechos',
+        loadComponent: () =>
+          import('./pages/summary-preview/summary-preview').then((m) => m.SummaryPreview),
+      },
+      {
         path: 'revisao',
         title: 'Revisão · Trechos',
         loadComponent: () => import('./pages/review/review').then((m) => m.Review),

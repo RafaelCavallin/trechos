@@ -17,6 +17,7 @@ import {
   LucideImage,
   LucidePaperclip,
   LucidePencil,
+  LucidePlay,
   LucideTriangleAlert,
   LucideX,
 } from '@lucide/angular';
@@ -75,6 +76,7 @@ type Salvamento = 'salvo' | 'pendente' | 'salvando' | 'erro';
     LucideImage,
     LucidePaperclip,
     LucidePencil,
+    LucidePlay,
     LucideTriangleAlert,
     LucideX,
   ],
@@ -119,6 +121,10 @@ export class SummaryEditor {
   );
 
   protected readonly selecionado = signal<ID | null>(null);
+  protected readonly trechoSelecionado = computed(() => {
+    const id = this.selecionado();
+    return id ? (trechoOfBlock(this.visao().trechos, id)?.id ?? null) : null;
+  });
   protected readonly cursorNaLacuna = signal(false);
   protected readonly perguntaEm = signal<ID | null>(null);
   protected readonly perguntaEditada = signal<ID | null>(null);
